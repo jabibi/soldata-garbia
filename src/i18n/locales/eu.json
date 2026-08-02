@@ -1,0 +1,70 @@
+{
+  "app": {
+    "title": "Soldata Garbia",
+    "subtitle": "Soldata garbiaren kalkulagailua — Arabako Lurralde Historikoa"
+  },
+  "form": {
+    "cardTitle": "Zure datuak",
+    "salarioBrutoAnual": "Urteko soldata gordina (€)",
+    "numeroPagas": "Urteko pagen kopurua",
+    "pagas12": "12 paga",
+    "pagas14": "14 paga",
+    "numeroDescendientes": "Ardurapeko ondorengoen kopurua",
+    "masDeCinco": "5 baino gehiago",
+    "tipoContrato": "Kontratu mota",
+    "indefinido": "Mugagabea",
+    "temporal": "Aldi baterakoa",
+    "gradoDiscapacidad": "Desgaitasun maila",
+    "discapacidadNinguno": "Desgaitasunik aitortu gabe",
+    "discapacidad33_65_sinMovilidad": "%33 - %65, mugikortasun murriztu gabe",
+    "discapacidad33_65_conMovilidad": "%33 - %65, mugikortasun murriztuarekin",
+    "discapacidad65OMas": "%65 edo gehiago",
+    "submit": "Soldata garbia kalkulatu",
+    "submitting": "Kalkulatzen..."
+  },
+  "result": {
+    "cardTitle": "Zure soldata garbia",
+    "netoMensual": "Hileko garbia",
+    "netoAnual": "Urteko garbia",
+    "retencionIrpf": "PFEZ atxikipena",
+    "seguridadSocial": "Gizarte Segurantza",
+    "minoracionNota": "(%{{tabla}} taula orokorra − {{puntos}} puntu desgaitasunagatik)",
+    "desgloseTitle": "Xehakapena",
+    "concepto": "Kontzeptua",
+    "mensual": "Hilekoa",
+    "anual": "Urtekoa",
+    "salarioBruto": "Soldata gordina",
+    "ssContingenciasComunes": "Gizarte Segurantza — kontingentzia amankomunak",
+    "ssDesempleo": "Gizarte Segurantza — langabezia",
+    "ssFormacionProfesional": "Gizarte Segurantza — lanbide heziketa",
+    "ssMei": "Gizarte Segurantza — MEI",
+    "salarioNeto": "Soldata garbia",
+    "disclaimer": "Kalkulu hau orientagarria da, Arabako Foru Aldundiaren PFEZ atxikipen-taulan (42/2025 Foru Dekretua) eta 2026an indarrean dauden Gizarte Segurantzako kotizazioetan (PJC/297/2026 Agindua) oinarrituta. Ez du ordezkatzen zure benetako nomina, ezta zure enpresako aholkularitzarekin edo Ogasunarekin egindako kontsulta ere."
+  },
+  "errors": {
+    "calculo": "Ezin izan da emaitza kalkulatu. Saiatu berriro."
+  },
+  "auth": {
+    "signin": "Hasi saioa",
+    "signup": "Sortu kontua",
+    "signout": "Amaitu saioa",
+    "email": "Helbide elektronikoa",
+    "password": "Pasahitza",
+    "switchToSignup": "Ez duzu konturik? Sortu",
+    "switchToSignin": "Kontua baduzu? Hasi saioa",
+    "error": "Ezin izan da eragiketa burutu. Egiaztatu datuak eta saiatu berriro.",
+    "admin": "administrazioa"
+  },
+  "historial": {
+    "title": "Zure historia",
+    "empty": "Oraindik ez duzu kalkulurik gorde.",
+    "fecha": "Data"
+  },
+  "admin": {
+    "title": "Erabiltzaileen administrazioa",
+    "email": "Helbide elektronikoa",
+    "rol": "Rola",
+    "roleUsuario": "Erabiltzailea",
+    "roleAdministrador": "Administratzailea"
+  }
+}

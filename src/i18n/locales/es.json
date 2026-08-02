@@ -1,0 +1,70 @@
+{
+  "app": {
+    "title": "Soldata Garbia",
+    "subtitle": "Calculadora de salario neto — Territorio Histórico de Álava"
+  },
+  "form": {
+    "cardTitle": "Tus datos",
+    "salarioBrutoAnual": "Salario bruto anual (€)",
+    "numeroPagas": "Número de pagas",
+    "pagas12": "12 pagas",
+    "pagas14": "14 pagas",
+    "numeroDescendientes": "Número de descendientes a cargo",
+    "masDeCinco": "Más de 5",
+    "tipoContrato": "Tipo de contrato",
+    "indefinido": "Indefinido",
+    "temporal": "Temporal",
+    "gradoDiscapacidad": "Grado de discapacidad",
+    "discapacidadNinguno": "Sin discapacidad reconocida",
+    "discapacidad33_65_sinMovilidad": "33% - 65%, sin movilidad reducida",
+    "discapacidad33_65_conMovilidad": "33% - 65%, con movilidad reducida",
+    "discapacidad65OMas": "65% o superior",
+    "submit": "Calcular sueldo neto",
+    "submitting": "Calculando..."
+  },
+  "result": {
+    "cardTitle": "Tu sueldo neto",
+    "netoMensual": "Neto mensual",
+    "netoAnual": "Neto anual",
+    "retencionIrpf": "Retención IRPF",
+    "seguridadSocial": "Seguridad Social",
+    "minoracionNota": "({{tabla}}% tabla general − {{puntos}} pts discapacidad)",
+    "desgloseTitle": "Desglose",
+    "concepto": "Concepto",
+    "mensual": "Mensual",
+    "anual": "Anual",
+    "salarioBruto": "Salario bruto",
+    "ssContingenciasComunes": "Seguridad Social — contingencias comunes",
+    "ssDesempleo": "Seguridad Social — desempleo",
+    "ssFormacionProfesional": "Seguridad Social — formación profesional",
+    "ssMei": "Seguridad Social — MEI",
+    "salarioNeto": "Salario neto",
+    "disclaimer": "Cálculo orientativo según la tabla de retención IRPF de la Diputación Foral de Álava (Decreto Foral 42/2025) y las cotizaciones a la Seguridad Social vigentes en 2026 (Orden PJC/297/2026). No sustituye a tu nómina real ni a una consulta con la asesoría de tu empresa o con Hacienda."
+  },
+  "errors": {
+    "calculo": "No se ha podido calcular el resultado. Inténtalo de nuevo."
+  },
+  "auth": {
+    "signin": "Iniciar sesión",
+    "signup": "Crear cuenta",
+    "signout": "Cerrar sesión",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "switchToSignup": "¿No tienes cuenta? Créala",
+    "switchToSignin": "¿Ya tienes cuenta? Inicia sesión",
+    "error": "No se ha podido completar la operación. Comprueba los datos e inténtalo de nuevo.",
+    "admin": "administración"
+  },
+  "historial": {
+    "title": "Tu historial",
+    "empty": "Todavía no has guardado ningún cálculo.",
+    "fecha": "Fecha"
+  },
+  "admin": {
+    "title": "Administración de usuarios",
+    "email": "Correo electrónico",
+    "rol": "Rol",
+    "roleUsuario": "Usuario",
+    "roleAdministrador": "Administrador"
+  }
+}

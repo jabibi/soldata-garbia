@@ -1,0 +1,28 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    // Perfiles de usuario (rol, email). Solo los escriben las Cloud Functions
+    // (Admin SDK), nunca el cliente directamente.
+    match /users/{userId} {
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow write: if false;
+    }
+
+    // Historial de cálculos de nómina. Solo lo escribe la Cloud Function
+    // calcularNomina; cada persona solo puede leer sus propios cálculos,
+    // salvo administración, que puede leerlos todos.
+    match /historial/{docId} {
+      allow read: if isSignedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow write: if false;
+    }
+  }
+}
