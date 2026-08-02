@@ -13,7 +13,7 @@ import { GradoDiscapacidad } from "./types";
  * retención según el número de descendientes a cargo (columnas 0..5, y "más
  * de 5" en el índice 6).
  */
-interface TramoRetencion {
+export interface TramoRetencion {
   desde: number;
   hasta: number; // Infinity para el último tramo
   porcentajes: [number, number, number, number, number, number, number];
@@ -63,7 +63,7 @@ export const TABLA_RETENCION_ALAVA_2026: TramoRetencion[] = [
  * "a" = grado 33%-65% sin movilidad reducida.
  * "bc" = grado 33%-65% con movilidad reducida, o grado >= 65%.
  */
-interface TramoMinoracionDiscapacidad {
+export interface TramoMinoracionDiscapacidad {
   desde: number;
   hasta: number;
   a: number;
@@ -99,9 +99,10 @@ function buscarTramo<T extends { desde: number; hasta: number }>(
 function puntosMinoracionDiscapacidad(
   gradoDiscapacidad: GradoDiscapacidad,
   rendimientoAnual: number,
+  tablaMinoracion: TramoMinoracionDiscapacidad[],
 ): number {
   if (gradoDiscapacidad === "ninguno") return 0;
-  const tramo = buscarTramo(TABLA_MINORACION_DISCAPACIDAD_2026, rendimientoAnual);
+  const tramo = buscarTramo(tablaMinoracion, rendimientoAnual);
   return gradoDiscapacidad === "33_65_sin_movilidad" ? tramo.a : tramo.bc;
 }
 
@@ -116,16 +117,22 @@ export interface ResultadoTipoRetencion {
  * rendimiento anual del trabajo dado, según la tabla general de porcentajes
  * y, si procede, la minoración por discapacidad de la persona trabajadora
  * activa. El tipo aplicado nunca es inferior a 0.
+ *
+ * `tablaRetencion`/`tablaMinoracion` se reciben como parámetro (en vez de
+ * usar las constantes de este módulo directamente) para que puedan venir de
+ * la configuración editable en Firestore; ver `domain/configuracion.ts`.
  */
 export function calcularTipoRetencionAlava(
   rendimientoAnual: number,
   numeroDescendientes: number,
   gradoDiscapacidad: GradoDiscapacidad,
+  tablaRetencion: TramoRetencion[],
+  tablaMinoracion: TramoMinoracionDiscapacidad[],
 ): ResultadoTipoRetencion {
   const columna = indiceColumnaDescendientes(numeroDescendientes);
-  const tramo = buscarTramo(TABLA_RETENCION_ALAVA_2026, rendimientoAnual);
+  const tramo = buscarTramo(tablaRetencion, rendimientoAnual);
   const tipoTablaGeneral = tramo.porcentajes[columna];
-  const puntos = puntosMinoracionDiscapacidad(gradoDiscapacidad, rendimientoAnual);
+  const puntos = puntosMinoracionDiscapacidad(gradoDiscapacidad, rendimientoAnual, tablaMinoracion);
   const tipoAplicado = Math.max(0, tipoTablaGeneral - puntos);
   return {
     tipoTablaGeneral,

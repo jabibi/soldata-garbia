@@ -66,5 +66,28 @@
     "rol": "Rol",
     "roleUsuario": "Usuario",
     "roleAdministrador": "Administrador"
+  },
+  "configuracion": {
+    "title": "Configuración de cálculo",
+    "ssTitle": "Tasas de Seguridad Social",
+    "ssBaseMaxima": "Base máxima mensual (€)",
+    "ssContingenciasComunes": "Contingencias comunes (%)",
+    "ssDesempleoIndefinido": "Desempleo — indefinido (%)",
+    "ssDesempleoTemporal": "Desempleo — temporal (%)",
+    "ssFormacionProfesional": "Formación profesional (%)",
+    "ssMei": "MEI (%)",
+    "irpfTitle": "Tabla de retención IRPF",
+    "irpfHasta": "Hasta (€)",
+    "sinLimite": "Sin límite",
+    "agregarTramo": "Añadir tramo",
+    "eliminarTramo": "Eliminar",
+    "minoracionTitle": "Minoración por discapacidad",
+    "minoracionPuntosA": "Puntos (33%-65%, sin movilidad reducida)",
+    "minoracionPuntosBc": "Puntos (33%-65% con movilidad, o ≥65%)",
+    "restaurar": "Restaurar valores por defecto",
+    "guardar": "Guardar cambios",
+    "guardando": "Guardando...",
+    "guardadoOk": "Configuración guardada.",
+    "error": "No se ha podido guardar la configuración. Comprueba los valores e inténtalo de nuevo."
   }
 }

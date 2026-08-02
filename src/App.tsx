@@ -6,6 +6,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { AuthStatus } from "@/components/AuthStatus";
 import { HistorialList } from "@/components/HistorialList";
 import { AdminPanel } from "@/components/AdminPanel";
+import { ConfiguracionPanel } from "@/components/ConfiguracionPanel";
 import { AuthProvider } from "@/context/AuthContext";
 import { calcularNomina } from "@/lib/api";
 import type { CalculoNominaInput, CalculoNominaResultado } from "@/lib/types";
@@ -52,6 +53,7 @@ function App() {
           {resultado && <ResultCard resultado={resultado} />}
           <HistorialList />
           <AdminPanel />
+          <ConfiguracionPanel />
         </main>
       </div>
     </AuthProvider>

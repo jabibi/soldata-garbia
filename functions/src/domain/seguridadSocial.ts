@@ -26,6 +26,16 @@ export const SS_2026 = {
   },
 };
 
+/** Tasas a cargo de la persona trabajadora, como fracciones (0.047 = 4,7%). */
+export interface SeguridadSocialTasas {
+  baseMaximaMensual: number;
+  contingenciasComunes: number;
+  desempleoIndefinido: number;
+  desempleoTemporal: number;
+  formacionProfesional: number;
+  mei: number;
+}
+
 export interface ResultadoCotizacionSS {
   baseCotizacionMensual: number;
   tipoAplicado: number;
@@ -42,26 +52,27 @@ export interface ResultadoCotizacionSS {
  * Calcula la cotización a la Seguridad Social a cargo de la persona
  * trabajadora sobre una retribución bruta mensual (nómina ordinaria o paga
  * extra), aplicando el tope máximo de cotización mensual.
+ *
+ * `tasas` se recibe como parámetro (en vez de usar `SS_2026` directamente)
+ * para que pueda venir de la configuración editable en Firestore; ver
+ * `domain/configuracion.ts`.
  */
 export function calcularCotizacionSSMensual(
   brutoMensual: number,
   tipoContrato: TipoContrato,
+  tasas: SeguridadSocialTasas,
 ): ResultadoCotizacionSS {
-  const baseCotizacionMensual = Math.min(brutoMensual, SS_2026.baseMaximaMensual);
+  const baseCotizacionMensual = Math.min(brutoMensual, tasas.baseMaximaMensual);
 
-  const tipoDesempleo =
-    tipoContrato === "indefinido"
-      ? SS_2026.desempleo.indefinido.trabajador
-      : SS_2026.desempleo.temporal.trabajador;
+  const tipoDesempleo = tipoContrato === "indefinido" ? tasas.desempleoIndefinido : tasas.desempleoTemporal;
 
-  const contingenciasComunes = baseCotizacionMensual * SS_2026.contingenciasComunes.trabajador;
+  const contingenciasComunes = baseCotizacionMensual * tasas.contingenciasComunes;
   const desempleo = baseCotizacionMensual * tipoDesempleo;
-  const formacionProfesional = baseCotizacionMensual * SS_2026.formacionProfesional.trabajador;
-  const mei = baseCotizacionMensual * SS_2026.mei.trabajador;
+  const formacionProfesional = baseCotizacionMensual * tasas.formacionProfesional;
+  const mei = baseCotizacionMensual * tasas.mei;
 
   const importeMensual = contingenciasComunes + desempleo + formacionProfesional + mei;
-  const tipoAplicado =
-    SS_2026.contingenciasComunes.trabajador + tipoDesempleo + SS_2026.formacionProfesional.trabajador + SS_2026.mei.trabajador;
+  const tipoAplicado = tasas.contingenciasComunes + tipoDesempleo + tasas.formacionProfesional + tasas.mei;
 
   return {
     baseCotizacionMensual,

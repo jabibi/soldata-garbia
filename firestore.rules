@@ -24,5 +24,13 @@ service cloud.firestore {
       allow read: if isSignedIn() && (resource.data.uid == request.auth.uid || isAdmin());
       allow write: if false;
     }
+
+    // Configuración de cálculo (tabla IRPF, minoración por discapacidad,
+    // tasas de Seguridad Social). Solo la escribe la Cloud Function
+    // actualizarConfiguracionCalculo; solo administración necesita verla.
+    match /configuracion/{docId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
   }
 }

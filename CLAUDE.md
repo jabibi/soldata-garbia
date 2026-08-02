@@ -56,17 +56,38 @@ rules/indexes per `firebase.json`).
   (`calcularCotizacionSSMensual`), which differ by contract type (`indefinido` vs `temporal`).
 - `calculadora.ts` — orchestrates the two into a full gross-to-net breakdown (`calcularNomina`).
 
-These tables are legally dated (currently the 2026 Álava/state figures, with BOTHA/BOE citations in comments).
-When updating them for a new fiscal year, add new dated tables/constants rather than mutating the existing ones
-in place, since past calculations in `historial` reference whatever rates were live at calculation time.
+These tables are legally dated (currently the 2026 Álava/state figures, with BOTHA/BOE citations in comments) and
+now serve as **factory defaults only** — the live values an admin has edited take precedence, see below.
 
-**`functions/src/domain/types.ts` and `src/lib/types.ts` are hand-duplicated.** There's no shared package between
-the two npm projects, so `CalculoNominaInput`/`CalculoNominaResultado` must be kept in sync manually whenever the
-calculation shape changes.
+**`functions/src/domain/types.ts` and `src/lib/types.ts` are hand-duplicated**, as are
+`functions/src/domain/configuracion.ts`'s types/`CONFIGURACION_DEFECTO` and their frontend counterparts in
+`src/lib/types.ts`/`src/lib/configuracionDefecto.ts`. There's no shared package between the two npm projects, so
+all of these must be kept in sync manually whenever a shape changes.
+
+**Calculation parameters are admin-editable at runtime**, stored in a single Firestore document
+`configuracion/parametros` (`functions/src/domain/configuracion.ts`):
+- The document holds the IRPF withholding table, the disability-minoration table, and the Social Security rates,
+  all as **whole-number percentages** (e.g. `4.7`, not `0.047` — conversion to a fraction happens only inside the
+  calculation). The unbounded last tramo of each table is stored as `hasta: null` (Firestore has no `Infinity`);
+  `resolverConfiguracion` converts `null` → `Infinity` and derives each tramo's `desde` from the previous tramo's
+  `hasta` + 0.01 — `desde` itself is never stored or admin-edited, which rules out gaps/overlaps by construction.
+- `calcularTipoRetencionAlava`/`calcularCotizacionSSMensual` no longer read the hardcoded tables directly; they
+  take the resolved tables/rates as parameters. `calcularNomina` (`calculadora.ts`) takes a resolved
+  `ConfiguracionCalculo` alongside the payroll input.
+- If the Firestore doc is missing or fails validation (e.g. hand-edited into an inconsistent shape via the
+  Firebase console), `functions/src/index.ts` falls back to `CONFIGURACION_DEFECTO` (the same hardcoded 2026
+  tables) rather than failing the calculation — past `historial` entries are unaffected either way, since they
+  store the resolved result, not a reference to the config.
+- Updating the tables/rates only ever happens through the `actualizarConfiguracionCalculo` callable (admin-only,
+  zod-validated, full-document overwrite — never a partial merge, so the tables and rates can't drift out of sync
+  with each other).
 
 **Callable functions (`functions/src/index.ts`, all region `europe-west1`):**
-- `calcularNomina` — the only calculation entry point; validates input with zod, runs the domain calculation, and
-  (only if the caller is authenticated) writes the result to the `historial` Firestore collection.
+- `calcularNomina` — the only calculation entry point; validates input with zod, resolves the current
+  configuration (Firestore doc or defaults), runs the domain calculation, and (only if the caller is
+  authenticated) writes the result to the `historial` Firestore collection.
+- `actualizarConfiguracionCalculo` — admin-only; overwrites `configuracion/parametros` wholesale after zod
+  validation.
 - `bootstrapFirstAdmin` / `setUserRole` (`functions/src/auth/adminOps.ts`) — role management, see below.
 - `onUserCreate` (`functions/src/auth/onUserCreate.ts`) — a **v1** auth trigger (the others are v2 `onCall`) that
   creates the `users/{uid}` Firestore profile with `role: "usuario"` on signup.
@@ -78,12 +99,13 @@ calculation shape changes.
   the token doesn't already have the `admin` claim. The function is a no-op if any admin already exists — this is
   how the very first registered user becomes admin, with no manual console/service-key step.
 - Once a caller has the `admin` claim, `setUserRole` lets them promote/demote other users.
-- Firestore rules (`firestore.rules`) deny **all client-side writes** to `users` and `historial` — those
-  collections are only ever written by the Admin SDK from within Cloud Functions. Reads are restricted to the
-  owning `uid`, or any admin.
+- Firestore rules (`firestore.rules`) deny **all client-side writes** to `users`, `historial`, and `configuracion`
+  — those collections are only ever written by the Admin SDK from within Cloud Functions. Reads are restricted to
+  the owning `uid`/admins (`users`, `historial`) or admins only (`configuracion`, since only the admin-only
+  `ConfiguracionPanel` needs to see it).
 
 **Frontend structure:** `src/lib/firebase.ts` initializes the Firebase app (config is inline, not env-based) and
-wires up `functions`/`auth`/`db`. `src/lib/api.ts` and `src/lib/auth.ts` wrap the callable functions with typed
-`httpsCallable` calls. `src/components/ui/` holds shadcn/ui primitives (style `base-nova`, see `components.json`);
-the `@` path alias resolves to `src/` (`vite.config.ts`). Copy is externalized to `src/i18n/locales/{es,eu}.json`
-via i18next, with Spanish as the fallback language.
+wires up `functions`/`auth`/`db`. `src/lib/api.ts`, `src/lib/auth.ts`, and `src/lib/config.ts` wrap the callable
+functions with typed `httpsCallable` calls. `src/components/ui/` holds shadcn/ui primitives (style `base-nova`,
+see `components.json`); the `@` path alias resolves to `src/` (`vite.config.ts`). Copy is externalized to
+`src/i18n/locales/{es,eu}.json` via i18next, with Spanish as the fallback language.

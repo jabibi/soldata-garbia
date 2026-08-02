@@ -1,6 +1,19 @@
 import { CalculoNominaInput, CalculoNominaResultado } from "./types";
-import { calcularTipoRetencionAlava } from "./retencionAlava";
-import { calcularCotizacionSSMensual } from "./seguridadSocial";
+import { calcularTipoRetencionAlava, TramoRetencion, TramoMinoracionDiscapacidad } from "./retencionAlava";
+import { calcularCotizacionSSMensual, SeguridadSocialTasas } from "./seguridadSocial";
+
+/**
+ * Configuración de cálculo ya resuelta a la forma interna que usan las
+ * funciones de dominio (tramos con `hasta: Infinity` en vez de `null`, tasas
+ * de Seguridad Social como fracciones). Se obtiene a partir de
+ * `ConfiguracionCalculo` (la forma serializable en Firestore) mediante
+ * `resolverConfiguracion`, ver `domain/configuracion.ts`.
+ */
+export interface ConfiguracionResuelta {
+  tablaRetencionIrpf: TramoRetencion[];
+  tablaMinoracionDiscapacidad: TramoMinoracionDiscapacidad[];
+  seguridadSocial: SeguridadSocialTasas;
+}
 
 /**
  * Calcula el desglose de nómina bruto -> neto para el Territorio Histórico
@@ -14,16 +27,25 @@ import { calcularCotizacionSSMensual } from "./seguridadSocial";
  * calcula paga a paga con su propio tope mensual, lo que puede introducir
  * pequeñas diferencias si las pagas extra se cobran de forma no uniforme.
  */
-export function calcularNomina(input: CalculoNominaInput): CalculoNominaResultado {
+export function calcularNomina(
+  input: CalculoNominaInput,
+  configuracion: ConfiguracionResuelta,
+): CalculoNominaResultado {
   const { salarioBrutoAnual, numeroPagas, numeroDescendientes, tipoContrato, gradoDiscapacidad } = input;
 
   const salarioBrutoMensual = salarioBrutoAnual / numeroPagas;
 
-  const retencion = calcularTipoRetencionAlava(salarioBrutoAnual, numeroDescendientes, gradoDiscapacidad);
+  const retencion = calcularTipoRetencionAlava(
+    salarioBrutoAnual,
+    numeroDescendientes,
+    gradoDiscapacidad,
+    configuracion.tablaRetencionIrpf,
+    configuracion.tablaMinoracionDiscapacidad,
+  );
   const irpfImporteMensual = salarioBrutoMensual * (retencion.tipoAplicado / 100);
   const irpfImporteAnual = irpfImporteMensual * numeroPagas;
 
-  const ss = calcularCotizacionSSMensual(salarioBrutoMensual, tipoContrato);
+  const ss = calcularCotizacionSSMensual(salarioBrutoMensual, tipoContrato, configuracion.seguridadSocial);
   const ssImporteAnual = ss.importeMensual * numeroPagas;
 
   const salarioNetoMensual = salarioBrutoMensual - irpfImporteMensual - ss.importeMensual;

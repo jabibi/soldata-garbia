@@ -66,5 +66,28 @@
     "rol": "Rola",
     "roleUsuario": "Erabiltzailea",
     "roleAdministrador": "Administratzailea"
+  },
+  "configuracion": {
+    "title": "Kalkulu-konfigurazioa",
+    "ssTitle": "Gizarte Segurantzako tasak",
+    "ssBaseMaxima": "Hileko gehieneko base (€)",
+    "ssContingenciasComunes": "Kontingentzia amankomunak (%)",
+    "ssDesempleoIndefinido": "Langabezia — mugagabea (%)",
+    "ssDesempleoTemporal": "Langabezia — aldi baterakoa (%)",
+    "ssFormacionProfesional": "Lanbide heziketa (%)",
+    "ssMei": "MEI (%)",
+    "irpfTitle": "PFEZ atxikipen-taula",
+    "irpfHasta": "Arte (€)",
+    "sinLimite": "Mugarik gabe",
+    "agregarTramo": "Gehitu tartea",
+    "eliminarTramo": "Ezabatu",
+    "minoracionTitle": "Desgaitasunagatiko murrizketa",
+    "minoracionPuntosA": "Puntuak (%33-%65, mugikortasun murriztu gabe)",
+    "minoracionPuntosBc": "Puntuak (%33-%65 mugikortasun murriztuarekin, edo ≥%65)",
+    "restaurar": "Balio lehenetsiak berrezarri",
+    "guardar": "Aldaketak gorde",
+    "guardando": "Gordetzen...",
+    "guardadoOk": "Konfigurazioa gorde da.",
+    "error": "Ezin izan da konfigurazioa gorde. Egiaztatu balioak eta saiatu berriro."
   }
 }

@@ -1,5 +1,6 @@
 import * as functionsV1 from "firebase-functions/v1";
 import * as admin from "firebase-admin";
+import { FieldValue } from "firebase-admin/firestore";
 
 /**
  * Crea el perfil en Firestore (users/{uid}) para cada nueva cuenta de
@@ -12,6 +13,6 @@ export const onUserCreate = functionsV1
     await admin.firestore().collection("users").doc(user.uid).set({
       email: user.email ?? null,
       role: "usuario",
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
     });
   });

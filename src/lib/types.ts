@@ -40,3 +40,36 @@ export interface CalculoNominaResultado {
   salarioNetoMensual: number;
   salarioNetoAnual: number;
 }
+
+/**
+ * Configuración de cálculo editable por administración. `hasta: null`
+ * representa el último tramo, sin límite superior (Firestore no admite
+ * `Infinity` como valor numérico). Duplicado a mano de
+ * `functions/src/domain/configuracion.ts` — no hay paquete compartido entre
+ * frontend y functions.
+ */
+export interface TramoRetencionDoc {
+  hasta: number | null;
+  porcentajes: [number, number, number, number, number, number, number];
+}
+
+export interface TramoMinoracionDoc {
+  hasta: number | null;
+  a: number;
+  bc: number;
+}
+
+export interface SeguridadSocialConfig {
+  baseMaximaMensual: number;
+  contingenciasComunes: number;
+  desempleoIndefinido: number;
+  desempleoTemporal: number;
+  formacionProfesional: number;
+  mei: number;
+}
+
+export interface ConfiguracionCalculo {
+  tablaRetencionIrpf: TramoRetencionDoc[];
+  tablaMinoracionDiscapacidad: TramoMinoracionDoc[];
+  seguridadSocial: SeguridadSocialConfig;
+}
