@@ -64,7 +64,7 @@ export const calcularNomina = onCall({ region: "europe-west1", cors: true }, asy
  * puede invocarla. Se guarda el documento entero (sin merge) para que la
  * tabla y las tasas nunca queden en un estado inconsistente entre sí.
  */
-export const actualizarConfiguracionCalculo = onCall({ region: "europe-west1" }, async (request) => {
+export const actualizarConfiguracionCalculo = onCall({ region: "europe-west1", cors: true }, async (request) => {
   if (request.auth?.token.admin !== true) {
     throw new HttpsError("permission-denied", "Solo una persona administradora puede editar la configuración.");
   }

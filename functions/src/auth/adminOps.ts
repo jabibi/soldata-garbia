@@ -10,7 +10,7 @@ const ROLES = ["usuario", "administrador"] as const;
  * que se registra en la aplicación se convierta en administradora, sin
  * necesidad de tocar la consola de Firebase ni una clave de servicio.
  */
-export const bootstrapFirstAdmin = onCall({ region: "europe-west1" }, async (request) => {
+export const bootstrapFirstAdmin = onCall({ region: "europe-west1", cors: true }, async (request) => {
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "Debes iniciar sesión.");
   }
@@ -36,7 +36,7 @@ const setUserRoleSchema = z.object({
  * Cambia el rol de otra persona usuaria. Solo puede invocarlo una cuenta
  * que ya tenga el claim de administrador.
  */
-export const setUserRole = onCall({ region: "europe-west1" }, async (request) => {
+export const setUserRole = onCall({ region: "europe-west1", cors: true }, async (request) => {
   if (request.auth?.token.admin !== true) {
     throw new HttpsError("permission-denied", "Solo una persona administradora puede cambiar roles.");
   }
