@@ -81,6 +81,20 @@ all of these must be kept in sync manually whenever a shape changes.
 - Updating the tables/rates only ever happens through the `actualizarConfiguracionCalculo` callable (admin-only,
   zod-validated, full-document overwrite — never a partial merge, so the tables and rates can't drift out of sync
   with each other).
+- Both the IRPF table and the minoración table also support a **fixed override** independent of the table:
+  `irpfPorcentajeFijo`/`minoracionPuntosFijo` (`number | null`). When set, `calcularTipoRetencionAlava` uses that
+  value directly instead of looking up the table (`?? ` is used deliberately, since a fixed value of `0` must not
+  fall through to the table). The minoración fixed value is a single number applied to *any* non-`"ninguno"`
+  disability degree — it doesn't distinguish the table's "sin movilidad" vs "con movilidad/≥65%" columns. The
+  table itself stays visible/editable regardless of whether a fixed value is set; clearing the fixed value (set to
+  `null`) reverts to table-driven behavior.
+
+**All callable (`onCall`) functions must set `cors: true` explicitly** — it is not on by default in this project,
+and a missing `cors: true` produces a browser-side preflight failure with no server-side error/log at all (easy to
+mistake for a code bug). Additionally, newly-created v2 functions may not automatically get the public Cloud Run
+invoker permission (`allUsers`) on this GCP project — if a callable returns a generic Cloud Run/Google-Frontend
+403 (not a Firebase `HttpsError`) even with `cors: true` set, check the Cloud Run service's IAM permissions
+(Console → Cloud Run → service → Permissions → add `allUsers` as "Cloud Run Invoker").
 
 **Callable functions (`functions/src/index.ts`, all region `europe-west1`):**
 - `calcularNomina` — the only calculation entry point; validates input with zod, resolves the current
@@ -109,3 +123,14 @@ wires up `functions`/`auth`/`db`. `src/lib/api.ts`, `src/lib/auth.ts`, and `src/
 functions with typed `httpsCallable` calls. `src/components/ui/` holds shadcn/ui primitives (style `base-nova`,
 see `components.json`); the `@` path alias resolves to `src/` (`vite.config.ts`). Copy is externalized to
 `src/i18n/locales/{es,eu}.json` via i18next, with Spanish as the fallback language.
+
+**Routing** (`src/App.tsx`, react-router-dom): the calculator lives at `/`; `HistorialList`, `ConfiguracionPanel`,
+and `AdminPanel` were moved off the main page onto their own routes (`/history`, `/settings`, `/admin`
+respectively, guarded by small `SoloConectado`/`SoloAdmin` wrapper components that redirect to `/` otherwise) and
+are reached via `NavMenu.tsx`, which only lists the items the current user can access. **Route slugs are always
+in English regardless of UI language** (a deliberate choice — the app only has two languages and neither es/eu
+paths nor per-language route translation were wanted). The top bar (`NavMenu` + `LanguageSwitcher` + `AuthStatus`)
+uses `position: sticky` (not `fixed`) so it stays visible while scrolling without needing a manual offset/padding
+hack; the `<h1>`/subtitle block sits just below it in normal document flow and scrolls away normally. Firebase
+Hosting's wildcard rewrite (`firebase.json`, `"source": "**" → "/index.html"`) already makes these client-side
+routes work on hard refresh/direct link — no hosting config changes needed when adding routes.

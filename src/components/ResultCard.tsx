@@ -109,7 +109,12 @@ export function ResultCard({ resultado }: ResultCardProps) {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>{t("result.ssContingenciasComunes")}</TableCell>
+                <TableCell className="pt-4 font-medium">{t("result.seguridadSocial")}</TableCell>
+                <TableCell className="pt-4" />
+                <TableCell className="pt-4" />
+              </TableRow>
+              <TableRow>
+                <TableCell className="pl-4">— {t("result.ssContingenciasComunes")}</TableCell>
                 <TableCell className="text-right text-destructive">
                   −{formatoEuro.format(seguridadSocial.desglose.contingenciasComunes)}
                 </TableCell>
@@ -118,7 +123,7 @@ export function ResultCard({ resultado }: ResultCardProps) {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>{t("result.ssDesempleo")}</TableCell>
+                <TableCell className="pl-4">— {t("result.ssDesempleo")}</TableCell>
                 <TableCell className="text-right text-destructive">
                   −{formatoEuro.format(seguridadSocial.desglose.desempleo)}
                 </TableCell>
@@ -127,7 +132,7 @@ export function ResultCard({ resultado }: ResultCardProps) {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>{t("result.ssFormacionProfesional")}</TableCell>
+                <TableCell className="pl-4">— {t("result.ssFormacionProfesional")}</TableCell>
                 <TableCell className="text-right text-destructive">
                   −{formatoEuro.format(seguridadSocial.desglose.formacionProfesional)}
                 </TableCell>
@@ -136,7 +141,7 @@ export function ResultCard({ resultado }: ResultCardProps) {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>{t("result.ssMei")}</TableCell>
+                <TableCell className="pl-4">— {t("result.ssMei")}</TableCell>
                 <TableCell className="text-right text-destructive">
                   −{formatoEuro.format(seguridadSocial.desglose.mei)}
                 </TableCell>

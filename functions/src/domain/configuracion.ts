@@ -31,7 +31,11 @@ export interface SeguridadSocialConfig {
 
 export interface ConfiguracionCalculo {
   tablaRetencionIrpf: TramoRetencionDoc[];
+  /** Si no es null, sustituye la búsqueda en tablaRetencionIrpf. */
+  irpfPorcentajeFijo: number | null;
   tablaMinoracionDiscapacidad: TramoMinoracionDoc[];
+  /** Si no es null, sustituye la búsqueda en tablaMinoracionDiscapacidad para cualquier grado != "ninguno". */
+  minoracionPuntosFijo: number | null;
   seguridadSocial: SeguridadSocialConfig;
 }
 
@@ -78,12 +82,14 @@ export const configuracionSchema = z.object({
     .refine(tramosAscendentesConUltimoSinLimite, {
       message: "Los tramos deben estar en orden ascendente y solo el último puede no tener límite.",
     }),
+  irpfPorcentajeFijo: z.number().min(0).max(100).nullable(),
   tablaMinoracionDiscapacidad: z
     .array(tramoMinoracionSchema)
     .min(1)
     .refine(tramosAscendentesConUltimoSinLimite, {
       message: "Los tramos deben estar en orden ascendente y solo el último puede no tener límite.",
     }),
+  minoracionPuntosFijo: z.number().min(0).max(100).nullable(),
   seguridadSocial: z.object({
     baseMaximaMensual: z.number().positive(),
     contingenciasComunes: z.number().min(0).max(100),
@@ -108,11 +114,13 @@ export const CONFIGURACION_DEFECTO: ConfiguracionCalculo = {
     hasta: Number.isFinite(tramo.hasta) ? tramo.hasta : null,
     porcentajes: tramo.porcentajes,
   })),
+  irpfPorcentajeFijo: null,
   tablaMinoracionDiscapacidad: TABLA_MINORACION_DISCAPACIDAD_2026.map((tramo) => ({
     hasta: Number.isFinite(tramo.hasta) ? tramo.hasta : null,
     a: tramo.a,
     bc: tramo.bc,
   })),
+  minoracionPuntosFijo: null,
   seguridadSocial: {
     baseMaximaMensual: SS_2026.baseMaximaMensual,
     contingenciasComunes: SS_2026.contingenciasComunes.trabajador * 100,
@@ -165,7 +173,9 @@ export function resolverConfiguracion(configuracion: ConfiguracionCalculo): Conf
   const ss = configuracion.seguridadSocial;
   return {
     tablaRetencionIrpf,
+    irpfPorcentajeFijo: configuracion.irpfPorcentajeFijo,
     tablaMinoracionDiscapacidad,
+    minoracionPuntosFijo: configuracion.minoracionPuntosFijo,
     seguridadSocial: {
       baseMaximaMensual: ss.baseMaximaMensual,
       contingenciasComunes: ss.contingenciasComunes / 100,

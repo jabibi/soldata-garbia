@@ -11,7 +11,9 @@ import { calcularCotizacionSSMensual, SeguridadSocialTasas } from "./seguridadSo
  */
 export interface ConfiguracionResuelta {
   tablaRetencionIrpf: TramoRetencion[];
+  irpfPorcentajeFijo: number | null;
   tablaMinoracionDiscapacidad: TramoMinoracionDiscapacidad[];
+  minoracionPuntosFijo: number | null;
   seguridadSocial: SeguridadSocialTasas;
 }
 
@@ -40,7 +42,9 @@ export function calcularNomina(
     numeroDescendientes,
     gradoDiscapacidad,
     configuracion.tablaRetencionIrpf,
+    configuracion.irpfPorcentajeFijo,
     configuracion.tablaMinoracionDiscapacidad,
+    configuracion.minoracionPuntosFijo,
   );
   const irpfImporteMensual = salarioBrutoMensual * (retencion.tipoAplicado / 100);
   const irpfImporteAnual = irpfImporteMensual * numeroPagas;

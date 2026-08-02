@@ -45,7 +45,9 @@ export function ConfiguracionPanel() {
         const data = snap.data();
         setConfiguracion({
           tablaRetencionIrpf: data.tablaRetencionIrpf,
+          irpfPorcentajeFijo: data.irpfPorcentajeFijo ?? null,
           tablaMinoracionDiscapacidad: data.tablaMinoracionDiscapacidad,
+          minoracionPuntosFijo: data.minoracionPuntosFijo ?? null,
           seguridadSocial: data.seguridadSocial,
         });
       } else {
@@ -58,6 +60,14 @@ export function ConfiguracionPanel() {
 
   function actualizarSS(campo: keyof SeguridadSocialConfig, valor: string) {
     setConfiguracion((c) => ({ ...c, seguridadSocial: { ...c.seguridadSocial, [campo]: numeroSeguro(valor) } }));
+  }
+
+  function actualizarIrpfFijo(valor: string) {
+    setConfiguracion((c) => ({ ...c, irpfPorcentajeFijo: valor === "" ? null : numeroSeguro(valor) }));
+  }
+
+  function actualizarMinoracionFijo(valor: string) {
+    setConfiguracion((c) => ({ ...c, minoracionPuntosFijo: valor === "" ? null : numeroSeguro(valor) }));
   }
 
   function actualizarTramoIrpf(indice: number, siguiente: TramoRetencionDoc) {
@@ -204,6 +214,25 @@ export function ConfiguracionPanel() {
 
         <section className="space-y-3">
           <h3 className="text-sm font-medium">{t("configuracion.irpfTitle")}</h3>
+          <div className="space-y-1">
+            <Label htmlFor="irpfFijo">{t("configuracion.irpfFijoLabel")}</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="irpfFijo"
+                type="number"
+                className="w-32"
+                placeholder={t("configuracion.irpfFijoPlaceholder")}
+                value={configuracion.irpfPorcentajeFijo ?? ""}
+                onChange={(e) => actualizarIrpfFijo(e.target.value)}
+              />
+              {configuracion.irpfPorcentajeFijo !== null && (
+                <Button type="button" size="sm" variant="outline" onClick={() => actualizarIrpfFijo("")}>
+                  {t("configuracion.quitarFijo")}
+                </Button>
+              )}
+            </div>
+            <p className="text-muted-foreground text-xs">{t("configuracion.irpfFijoAyuda")}</p>
+          </div>
           <Table>
             <TableHeader>
               <TableRow>
@@ -265,6 +294,25 @@ export function ConfiguracionPanel() {
 
         <section className="space-y-3">
           <h3 className="text-sm font-medium">{t("configuracion.minoracionTitle")}</h3>
+          <div className="space-y-1">
+            <Label htmlFor="minoracionFijo">{t("configuracion.minoracionFijoLabel")}</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="minoracionFijo"
+                type="number"
+                className="w-32"
+                placeholder={t("configuracion.minoracionFijoPlaceholder")}
+                value={configuracion.minoracionPuntosFijo ?? ""}
+                onChange={(e) => actualizarMinoracionFijo(e.target.value)}
+              />
+              {configuracion.minoracionPuntosFijo !== null && (
+                <Button type="button" size="sm" variant="outline" onClick={() => actualizarMinoracionFijo("")}>
+                  {t("configuracion.quitarFijo")}
+                </Button>
+              )}
+            </div>
+            <p className="text-muted-foreground text-xs">{t("configuracion.minoracionFijoAyuda")}</p>
+          </div>
           <Table>
             <TableHeader>
               <TableRow>

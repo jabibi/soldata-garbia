@@ -100,8 +100,10 @@ function puntosMinoracionDiscapacidad(
   gradoDiscapacidad: GradoDiscapacidad,
   rendimientoAnual: number,
   tablaMinoracion: TramoMinoracionDiscapacidad[],
+  minoracionPuntosFijo: number | null,
 ): number {
   if (gradoDiscapacidad === "ninguno") return 0;
+  if (minoracionPuntosFijo !== null) return minoracionPuntosFijo;
   const tramo = buscarTramo(tablaMinoracion, rendimientoAnual);
   return gradoDiscapacidad === "33_65_sin_movilidad" ? tramo.a : tramo.bc;
 }
@@ -121,18 +123,27 @@ export interface ResultadoTipoRetencion {
  * `tablaRetencion`/`tablaMinoracion` se reciben como parámetro (en vez de
  * usar las constantes de este módulo directamente) para que puedan venir de
  * la configuración editable en Firestore; ver `domain/configuracion.ts`.
+ * `irpfPorcentajeFijo`/`minoracionPuntosFijo`, si no son `null`, sustituyen
+ * la búsqueda en su tabla correspondiente.
  */
 export function calcularTipoRetencionAlava(
   rendimientoAnual: number,
   numeroDescendientes: number,
   gradoDiscapacidad: GradoDiscapacidad,
   tablaRetencion: TramoRetencion[],
+  irpfPorcentajeFijo: number | null,
   tablaMinoracion: TramoMinoracionDiscapacidad[],
+  minoracionPuntosFijo: number | null,
 ): ResultadoTipoRetencion {
   const columna = indiceColumnaDescendientes(numeroDescendientes);
-  const tramo = buscarTramo(tablaRetencion, rendimientoAnual);
-  const tipoTablaGeneral = tramo.porcentajes[columna];
-  const puntos = puntosMinoracionDiscapacidad(gradoDiscapacidad, rendimientoAnual, tablaMinoracion);
+  const tipoTablaGeneral =
+    irpfPorcentajeFijo ?? buscarTramo(tablaRetencion, rendimientoAnual).porcentajes[columna];
+  const puntos = puntosMinoracionDiscapacidad(
+    gradoDiscapacidad,
+    rendimientoAnual,
+    tablaMinoracion,
+    minoracionPuntosFijo,
+  );
   const tipoAplicado = Math.max(0, tipoTablaGeneral - puntos);
   return {
     tipoTablaGeneral,

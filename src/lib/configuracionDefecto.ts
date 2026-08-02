@@ -45,6 +45,7 @@ export const CONFIGURACION_DEFECTO: ConfiguracionCalculo = {
     { hasta: 236060.0, porcentajes: [39, 39, 39, 38, 38, 37, 36] },
     { hasta: null, porcentajes: [40, 40, 40, 39, 39, 39, 37] },
   ],
+  irpfPorcentajeFijo: null,
   tablaMinoracionDiscapacidad: [
     { hasta: 25410.0, a: 9, bc: 12 },
     { hasta: 32610.0, a: 7, bc: 12 },
@@ -55,6 +56,7 @@ export const CONFIGURACION_DEFECTO: ConfiguracionCalculo = {
     { hasta: 190410.0, a: 2, bc: 5 },
     { hasta: null, a: 1, bc: 3 },
   ],
+  minoracionPuntosFijo: null,
   seguridadSocial: {
     baseMaximaMensual: 5101.2,
     contingenciasComunes: 4.7,

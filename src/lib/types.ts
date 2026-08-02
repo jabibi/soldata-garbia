@@ -70,6 +70,8 @@ export interface SeguridadSocialConfig {
 
 export interface ConfiguracionCalculo {
   tablaRetencionIrpf: TramoRetencionDoc[];
+  irpfPorcentajeFijo: number | null;
   tablaMinoracionDiscapacidad: TramoMinoracionDoc[];
+  minoracionPuntosFijo: number | null;
   seguridadSocial: SeguridadSocialConfig;
 }
