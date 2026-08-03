@@ -65,6 +65,7 @@
     "fecha": "Fecha"
   },
   "nav": {
+    "inicio": "Inicio",
     "historial": "Tu historial",
     "configuracion": "Configuración de cálculo",
     "administracion": "Administración de usuarios",

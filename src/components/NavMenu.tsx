@@ -14,12 +14,11 @@ export function NavMenu() {
   const [open, setOpen] = useState(false);
 
   const items = [
+    { to: "/", label: t("nav.inicio") },
     user && { to: "/history", label: t("nav.historial") },
     isAdmin && { to: "/settings", label: t("nav.configuracion") },
     isAdmin && { to: "/admin", label: t("nav.administracion") },
   ].filter((item): item is { to: string; label: string } => Boolean(item));
-
-  if (items.length === 0) return null;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
