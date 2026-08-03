@@ -1,32 +1,62 @@
-# React + TypeScript + Vite
+# Soldata Garbia
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Calculadora de salario neto para el Territorio Histórico de Álava, con retención de IRPF y
+cotizaciones a la Seguridad Social configurables por una persona administradora.
 
-Currently, two official plugins are available:
+**En producción:** https://soldata-garbia.web.app
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Español
 
-## React Compiler
+Soldata Garbia calcula el sueldo neto mensual y anual a partir del salario bruto anual, según:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Número de pagas** (12 o 14).
+- **Número de descendientes a cargo**, que reduce el tipo de retención de IRPF.
+- **Tipo de contrato** (indefinido o temporal), que afecta a la cotización por desempleo.
+- **Grado de discapacidad reconocido**, que da derecho a una minoración adicional del IRPF.
 
-## Expanding the Oxlint configuration
+El resultado incluye el desglose completo: retención de IRPF, y cada partida de la cotización a
+la Seguridad Social (contingencias comunes, desempleo, formación profesional y MEI).
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+Quien inicia sesión puede consultar su historial de cálculos guardados. La primera cuenta que se
+registra se convierte automáticamente en administradora.
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+### Configuración de cálculo (solo administración)
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Sin necesidad de tocar código ni desplegar de nuevo, una persona administradora puede editar en
+directo desde la propia aplicación:
+
+- La **tabla de retención de IRPF** (tramos por retribución anual y número de descendientes) y la
+  **tabla de minoración por discapacidad**, tramo a tramo, incluyendo añadir o eliminar tramos.
+- Un **porcentaje de IRPF fijo** y unos **puntos de minoración fijos**, opcionales e
+  independientes de las tablas anteriores, para casos en los que se quiera aplicar un valor
+  concreto sin tocar la tabla completa.
+- Las **tasas de cotización a la Seguridad Social** (base máxima mensual, contingencias comunes,
+  desempleo para contrato indefinido y temporal, formación profesional y MEI).
+
+## Euskara
+
+Soldata Garbiak hileko eta urteko soldata garbia kalkulatzen du urteko soldata gordinetik
+abiatuta, honako hauen arabera:
+
+- **Pagen kopurua** (12 edo 14).
+- **Ardurapeko ondorengoen kopurua**, PFEZ atxikipen-tipoa murrizten duena.
+- **Kontratu mota** (mugagabea edo aldi baterakoa), langabezia-kotizazioan eragina duena.
+- **Aitortutako desgaitasun maila**, PFEZ murrizketa gehigarri bat ematen duena.
+
+Emaitzak xehetasun osoa erakusten du: PFEZ atxikipena, eta Gizarte Segurantzako kotizazioaren
+kontzeptu bakoitza (kontingentzia arruntak, langabezia, lanbide-heziketa eta MEI).
+
+Saioa hasten duenak bere gordetako kalkuluen historia ikus dezake. Erregistratzen den lehen
+kontua automatikoki bihurtzen da administratzaile.
+
+### Kalkulu-konfigurazioa (administraziorako soilik)
+
+Kodea ukitu edo berriz zabaldu beharrik gabe, administratzaile batek zuzenean editatu ditzake
+aplikaziotik bertatik:
+
+- **PFEZ atxikipen-taula** (urteko errenta eta ondorengo kopuruaren araberako tarteak) eta
+  **desgaitasunagatiko murrizketa-taula**, tarteka, tarteak gehituz edo ezabatuz.
+- **PFEZ ehuneko finko** bat eta **murrizketa-puntu finkoak**, aukerakoak eta aurreko tauletatik
+  independienteak, taula osoa ukitu gabe balio zehatz bat aplikatu nahi denerako.
+- **Gizarte Segurantzako kotizazio-tasak** (hileko gehieneko basea, kontingentzia arruntak,
+  langabezia kontratu mugagabe eta aldi baterakoarentzat, lanbide-heziketa eta MEI).
