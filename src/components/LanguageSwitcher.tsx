@@ -36,12 +36,16 @@ export function LanguageSwitcher() {
         aria-label="Euskara"
         aria-pressed={actual === "eu"}
         onClick={() => i18n.changeLanguage("eu")}
-        className={cn(
-          "relative w-9 overflow-hidden p-0",
-          actual === "eu" && "ring-2 ring-foreground ring-offset-2",
-        )}
+        className="group relative w-9 overflow-hidden p-0"
       >
         <IkurrinaIcon className="absolute inset-0 size-full" />
+        <span
+          aria-hidden="true"
+          className={cn(
+            "absolute inset-0 transition-colors",
+            actual === "eu" ? "bg-black/45" : "bg-transparent group-hover:bg-black/10",
+          )}
+        />
       </Button>
     </div>
   );
