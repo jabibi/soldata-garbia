@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
+import { CircleHelp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +13,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { CalculoNominaInput, GradoDiscapacidad, TipoContrato } from "@/lib/types";
+
+function EtiquetaConAyuda({ texto, ayuda }: { texto: string; ayuda: string }) {
+  return (
+    <span className="inline-flex items-center gap-1">
+      {texto}
+      <Tooltip>
+        <TooltipTrigger render={<span className="cursor-help text-muted-foreground" />}>
+          <CircleHelp className="size-3.5" />
+        </TooltipTrigger>
+        <TooltipContent>{ayuda}</TooltipContent>
+      </Tooltip>
+    </span>
+  );
+}
 
 const OPCIONES_DESCENDIENTES = [0, 1, 2, 3, 4, 5, 6];
 const OPCIONES_DISCAPACIDAD: GradoDiscapacidad[] = [
@@ -35,8 +51,9 @@ interface CalculatorFormProps {
 }
 
 export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [salarioBrutoAnual, setSalarioBrutoAnual] = useState("30000");
+  const [salarioEnfocado, setSalarioEnfocado] = useState(false);
   const [numeroPagas, setNumeroPagas] = useState<"12" | "14">("14");
   const [numeroDescendientes, setNumeroDescendientes] = useState("0");
   const [tipoContrato, setTipoContrato] = useState<TipoContrato>("indefinido");
@@ -56,6 +73,12 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
     });
   }
 
+  const locale = i18n.language?.startsWith("eu") ? "eu-ES" : "es-ES";
+  const salarioMostrado =
+    salarioEnfocado || salarioBrutoAnual === ""
+      ? salarioBrutoAnual
+      : new Intl.NumberFormat(locale).format(Number(salarioBrutoAnual));
+
   return (
     <Card>
       <CardHeader>
@@ -67,12 +90,12 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
             <Label htmlFor="salarioBrutoAnual">{t("form.salarioBrutoAnual")}</Label>
             <Input
               id="salarioBrutoAnual"
-              type="number"
-              min="0"
-              step="1"
+              type="text"
               inputMode="numeric"
-              value={salarioBrutoAnual}
-              onChange={(e) => setSalarioBrutoAnual(e.target.value)}
+              value={salarioMostrado}
+              onFocus={() => setSalarioEnfocado(true)}
+              onBlur={() => setSalarioEnfocado(false)}
+              onChange={(e) => setSalarioBrutoAnual(e.target.value.replace(/\D/g, ""))}
               required
             />
           </div>
@@ -94,7 +117,12 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label>{t("form.numeroDescendientes")}</Label>
+            <Label>
+              <EtiquetaConAyuda
+                texto={t("form.numeroDescendientes")}
+                ayuda={t("form.numeroDescendientesAyuda")}
+              />
+            </Label>
             <Select
               items={OPCIONES_DESCENDIENTES.map((n) => ({
                 value: String(n),
@@ -117,7 +145,9 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label>{t("form.tipoContrato")}</Label>
+            <Label>
+              <EtiquetaConAyuda texto={t("form.tipoContrato")} ayuda={t("form.tipoContratoAyuda")} />
+            </Label>
             <RadioGroup
               className="grid-cols-2"
               value={tipoContrato}
