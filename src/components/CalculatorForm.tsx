@@ -69,8 +69,8 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
               id="salarioBrutoAnual"
               type="number"
               min="0"
-              step="any"
-              inputMode="decimal"
+              step="1"
+              inputMode="numeric"
               value={salarioBrutoAnual}
               onChange={(e) => setSalarioBrutoAnual(e.target.value)}
               required
