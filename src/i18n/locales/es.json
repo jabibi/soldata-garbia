@@ -38,6 +38,7 @@
     "ssDesempleo": "desempleo",
     "ssFormacionProfesional": "formación profesional",
     "ssMei": "MEI",
+    "ssMeiTooltip": "Mecanismo de Equidad Intergeneracional: cotización adicional destinada a reforzar la sostenibilidad futura de las pensiones.",
     "salarioNeto": "Salario neto",
     "disclaimer": "Cálculo orientativo según la tabla de retención IRPF de la Diputación Foral de Álava (Decreto Foral 42/2025) y las cotizaciones a la Seguridad Social vigentes en 2026 (Orden PJC/297/2026). No sustituye a tu nómina real ni a una consulta con la asesoría de tu empresa o con Hacienda."
   },

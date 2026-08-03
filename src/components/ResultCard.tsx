@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { CalculoNominaResultado } from "@/lib/types";
 
 interface ResultCardProps {
@@ -141,7 +142,15 @@ export function ResultCard({ resultado }: ResultCardProps) {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className="pl-4">— {t("result.ssMei")}</TableCell>
+                <TableCell className="pl-4">
+                  —{" "}
+                  <Tooltip>
+                    <TooltipTrigger render={<span className="cursor-help underline decoration-dotted underline-offset-2" />}>
+                      {t("result.ssMei")}
+                    </TooltipTrigger>
+                    <TooltipContent>{t("result.ssMeiTooltip")}</TooltipContent>
+                  </Tooltip>
+                </TableCell>
                 <TableCell className="text-right text-destructive">
                   −{formatoEuro.format(seguridadSocial.desglose.mei)}
                 </TableCell>
