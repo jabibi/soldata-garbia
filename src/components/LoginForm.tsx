@@ -32,7 +32,7 @@ export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
   }
 
   return (
-    <form className="w-72 space-y-3 rounded-lg border bg-popover p-4 shadow-md" onSubmit={handleSubmit}>
+    <form className="space-y-3" onSubmit={handleSubmit}>
       <div className="space-y-1">
         <Label htmlFor="email">{t("auth.email")}</Label>
         <Input

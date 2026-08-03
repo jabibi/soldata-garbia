@@ -53,7 +53,8 @@
     "switchToSignup": "Ez duzu konturik? Sortu",
     "switchToSignin": "Kontua baduzu? Hasi saioa",
     "error": "Ezin izan da eragiketa burutu. Egiaztatu datuak eta saiatu berriro.",
-    "admin": "administrazioa"
+    "admin": "administrazioa",
+    "cuenta": "Zure kontua"
   },
   "historial": {
     "title": "Zure historia",
@@ -63,7 +64,8 @@
   "nav": {
     "historial": "Zure historia",
     "configuracion": "Kalkulu-konfigurazioa",
-    "administracion": "Erabiltzaileen administrazioa"
+    "administracion": "Erabiltzaileen administrazioa",
+    "abrirMenu": "Ireki menua"
   },
   "admin": {
     "title": "Erabiltzaileen administrazioa",

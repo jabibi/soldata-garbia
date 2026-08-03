@@ -124,6 +124,14 @@ functions with typed `httpsCallable` calls. `src/components/ui/` holds shadcn/ui
 see `components.json`); the `@` path alias resolves to `src/` (`vite.config.ts`). Copy is externalized to
 `src/i18n/locales/{es,eu}.json` via i18next, with Spanish as the fallback language.
 
+**Icon-triggered popovers** (`NavMenu.tsx`, `AuthStatus.tsx`): both wrap `src/components/ui/popover.tsx`
+(a thin wrapper around `@base-ui/react/popover`, same pattern as `ui/select.tsx`) around an icon-only
+`Button` (`variant="ghost" size="icon"`, from lucide-react) instead of showing text/links inline in the
+header — keeps the sticky top bar narrow enough to avoid horizontal scroll on mobile. Open state is
+controlled locally (`useState` + `onOpenChange`) so a link/action inside the popup can close it explicitly;
+outside-click/Escape-to-close comes for free from Base UI. `LoginForm` has no box styling of its own (no
+border/shadow/bg) since it's only ever rendered inside `PopoverContent`, which already provides that chrome.
+
 **Routing** (`src/App.tsx`, react-router-dom): the calculator lives at `/`; `HistorialList`, `ConfiguracionPanel`,
 and `AdminPanel` were moved off the main page onto their own routes (`/history`, `/settings`, `/admin`
 respectively, guarded by small `SoloConectado`/`SoloAdmin` wrapper components that redirect to `/` otherwise) and

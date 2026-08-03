@@ -53,7 +53,8 @@
     "switchToSignup": "¿No tienes cuenta? Créala",
     "switchToSignin": "¿Ya tienes cuenta? Inicia sesión",
     "error": "No se ha podido completar la operación. Comprueba los datos e inténtalo de nuevo.",
-    "admin": "administración"
+    "admin": "administración",
+    "cuenta": "Tu cuenta"
   },
   "historial": {
     "title": "Tu historial",
@@ -63,7 +64,8 @@
   "nav": {
     "historial": "Tu historial",
     "configuracion": "Configuración de cálculo",
-    "administracion": "Administración de usuarios"
+    "administracion": "Administración de usuarios",
+    "abrirMenu": "Abrir menú"
   },
   "admin": {
     "title": "Administración de usuarios",
