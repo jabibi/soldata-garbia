@@ -60,13 +60,13 @@
     "cuenta": "Zure kontua"
   },
   "historial": {
-    "title": "Zure historia",
+    "title": "Historiala",
     "empty": "Oraindik ez duzu kalkulurik gorde.",
-    "fecha": "Data"
+    "fecha": "Data eta ordua"
   },
   "nav": {
     "inicio": "Hasiera",
-    "historial": "Zure historia",
+    "historial": "Historiala",
     "configuracion": "Kalkulu-konfigurazioa",
     "administracion": "Erabiltzaileen administrazioa",
     "abrirMenu": "Ireki menua"

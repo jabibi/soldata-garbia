@@ -60,13 +60,13 @@
     "cuenta": "Tu cuenta"
   },
   "historial": {
-    "title": "Tu historial",
+    "title": "Historial",
     "empty": "Todavía no has guardado ningún cálculo.",
-    "fecha": "Fecha"
+    "fecha": "Fecha y hora"
   },
   "nav": {
     "inicio": "Inicio",
-    "historial": "Tu historial",
+    "historial": "Historial",
     "configuracion": "Configuración de cálculo",
     "administracion": "Administración de usuarios",
     "abrirMenu": "Abrir menú"

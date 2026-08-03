@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
+import { formatearFechaHora } from "@/lib/fecha";
 import type { CalculoNominaResultado } from "@/lib/types";
 
 interface HistorialEntry {
@@ -48,8 +49,6 @@ export function HistorialList() {
     maximumFractionDigits: 2,
     useGrouping: "always",
   });
-  const formatoFecha = new Intl.DateTimeFormat(locale, { dateStyle: "short", timeStyle: "short" });
-
   return (
     <Card>
       <CardHeader>
@@ -70,7 +69,9 @@ export function HistorialList() {
             <TableBody>
               {entradas.map((entrada) => (
                 <TableRow key={entrada.id}>
-                  <TableCell>{entrada.createdAt ? formatoFecha.format(entrada.createdAt.toDate()) : "—"}</TableCell>
+                  <TableCell>
+                    {entrada.createdAt ? formatearFechaHora(entrada.createdAt.toDate(), locale) : "—"}
+                  </TableCell>
                   <TableCell className="text-right">
                     {formatoEuro.format(entrada.resultado.salarioBrutoAnual)}
                   </TableCell>
