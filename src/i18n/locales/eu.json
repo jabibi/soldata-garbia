@@ -27,6 +27,7 @@
     "netoMensual": "Hileko garbia",
     "netoAnual": "Urteko garbia",
     "retencionIrpf": "PFEZ atxikipena",
+    "retencionIrpfTooltip": "PFEZ: Pertsona Fisikoen Errentaren gaineko Zerga. Zure enpresak nominatik kentzen duen ehunekoa da, urteko errenta-aitorpenaren kontura Ogasunari aurreratzen diona.",
     "seguridadSocial": "Gizarte Segurantza",
     "minoracionNota": "(%{{tabla}} taula orokorra − {{puntos}} puntu desgaitasunagatik)",
     "desgloseTitle": "Xehetasunak",
@@ -35,12 +36,13 @@
     "anual": "Urtekoa",
     "salarioBruto": "Soldata gordina",
     "ssContingenciasComunes": "Kontingentzia arruntak",
+    "ssContingenciasComunesTooltip": "Ohiko gaixotasunak eta laneko istripua ez den istripuak estaltzen dituen kotizazioa.",
     "ssDesempleo": "Langabezia",
     "ssFormacionProfesional": "Lanbide-heziketa",
     "ssMei": "MEI",
     "ssMeiTooltip": "Belaunaldien arteko Ekitate Mekanismoa: etorkizuneko pentsioen iraunkortasuna indartzeko kotizazio gehigarria.",
     "salarioNeto": "Soldata garbia",
-    "disclaimer": "Kalkulu hau orientagarria da, Arabako Foru Aldundiaren PFEZ atxikipen-taulan (42/2025 Foru Dekretua) eta 2026an indarrean dauden Gizarte Segurantzako kotizazioetan (PJC/297/2026 Agindua) oinarrituta. Ez du ordezkatzen zure benetako nomina, ezta zure enpresako aholkularitzarekin edo Ogasunarekin egindako kontsulta ere."
+    "disclaimer": "Kalkulu hau orientagarria da, Arabako Foru Aldundiaren PFEZ atxikipen-taulan (42/2025 Foru Dekretua) eta 2026an indarrean dauden Gizarte Segurantzako kotizazioetan (PJC/297/2026 Agindua) oinarritua. Ez du zure benetako nomina ordezkatzen, ezta zure enpresako aholkularitzari zein Ogasunari egindako kontsulta ere."
   },
   "errors": {
     "calculo": "Ezin izan da emaitza kalkulatu. Saiatu berriro."

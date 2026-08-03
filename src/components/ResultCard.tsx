@@ -16,6 +16,17 @@ interface ResultCardProps {
   resultado: CalculoNominaResultado;
 }
 
+function EtiquetaConTooltip({ texto, explicacion }: { texto: string; explicacion: string }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger render={<span className="cursor-help underline decoration-dotted underline-offset-2" />}>
+        {texto}
+      </TooltipTrigger>
+      <TooltipContent>{explicacion}</TooltipContent>
+    </Tooltip>
+  );
+}
+
 export function ResultCard({ resultado }: ResultCardProps) {
   const { t, i18n } = useTranslation();
   const { retencionIrpf, seguridadSocial } = resultado;
@@ -58,7 +69,12 @@ export function ResultCard({ resultado }: ResultCardProps) {
 
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
-              <p className="text-muted-foreground text-sm">{t("result.retencionIrpf")}</p>
+              <p className="text-muted-foreground text-sm">
+                <EtiquetaConTooltip
+                  texto={t("result.retencionIrpf")}
+                  explicacion={t("result.retencionIrpfTooltip")}
+                />
+              </p>
               <p className="text-xl font-medium">
                 {formatoPorcentaje.format(retencionIrpf.tipoAplicado / 100)}
               </p>
@@ -101,7 +117,12 @@ export function ResultCard({ resultado }: ResultCardProps) {
                 <TableCell className="text-right">{formatoEuro.format(resultado.salarioBrutoAnual)}</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>{t("result.retencionIrpf")}</TableCell>
+                <TableCell>
+                  <EtiquetaConTooltip
+                    texto={t("result.retencionIrpf")}
+                    explicacion={t("result.retencionIrpfTooltip")}
+                  />
+                </TableCell>
                 <TableCell className="text-right text-destructive">
                   −{formatoEuro.format(retencionIrpf.importeMensual)}
                 </TableCell>
@@ -115,7 +136,13 @@ export function ResultCard({ resultado }: ResultCardProps) {
                 <TableCell className="pt-4" />
               </TableRow>
               <TableRow>
-                <TableCell className="pl-4">— {t("result.ssContingenciasComunes")}</TableCell>
+                <TableCell className="pl-4">
+                  —{" "}
+                  <EtiquetaConTooltip
+                    texto={t("result.ssContingenciasComunes")}
+                    explicacion={t("result.ssContingenciasComunesTooltip")}
+                  />
+                </TableCell>
                 <TableCell className="text-right text-destructive">
                   −{formatoEuro.format(seguridadSocial.desglose.contingenciasComunes)}
                 </TableCell>
@@ -143,13 +170,7 @@ export function ResultCard({ resultado }: ResultCardProps) {
               </TableRow>
               <TableRow>
                 <TableCell className="pl-4">
-                  —{" "}
-                  <Tooltip>
-                    <TooltipTrigger render={<span className="cursor-help underline decoration-dotted underline-offset-2" />}>
-                      {t("result.ssMei")}
-                    </TooltipTrigger>
-                    <TooltipContent>{t("result.ssMeiTooltip")}</TooltipContent>
-                  </Tooltip>
+                  — <EtiquetaConTooltip texto={t("result.ssMei")} explicacion={t("result.ssMeiTooltip")} />
                 </TableCell>
                 <TableCell className="text-right text-destructive">
                   −{formatoEuro.format(seguridadSocial.desglose.mei)}
