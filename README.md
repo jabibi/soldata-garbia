@@ -5,8 +5,6 @@ cotizaciones a la Seguridad Social configurables por una persona administradora.
 
 **En producción:** https://soldata-garbia.web.app
 
-## Español
-
 Soldata Garbia calcula el sueldo neto mensual y anual a partir del salario bruto anual, según:
 
 - **Número de pagas** (12 o 14).
