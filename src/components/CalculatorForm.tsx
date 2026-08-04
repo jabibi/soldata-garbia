@@ -13,19 +13,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { InfoTooltip } from "@/components/InfoTooltip";
 import type { CalculoNominaInput, GradoDiscapacidad, TipoContrato } from "@/lib/types";
 
 function EtiquetaConAyuda({ texto, ayuda }: { texto: string; ayuda: string }) {
   return (
     <span className="inline-flex items-center gap-1">
       {texto}
-      <Tooltip>
-        <TooltipTrigger render={<span className="cursor-help text-muted-foreground" />}>
-          <CircleHelp className="size-3.5" />
-        </TooltipTrigger>
-        <TooltipContent>{ayuda}</TooltipContent>
-      </Tooltip>
+      <InfoTooltip content={ayuda} className="text-muted-foreground">
+        <CircleHelp className="size-3.5" />
+      </InfoTooltip>
     </span>
   );
 }

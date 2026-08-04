@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ChevronRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -9,7 +11,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { InfoTooltip } from "@/components/InfoTooltip";
+import { cn } from "@/lib/utils";
 import type { CalculoNominaResultado } from "@/lib/types";
 
 interface ResultCardProps {
@@ -18,17 +21,15 @@ interface ResultCardProps {
 
 function EtiquetaConTooltip({ texto, explicacion }: { texto: string; explicacion: string }) {
   return (
-    <Tooltip>
-      <TooltipTrigger render={<span className="cursor-help underline decoration-dotted underline-offset-2" />}>
-        {texto}
-      </TooltipTrigger>
-      <TooltipContent>{explicacion}</TooltipContent>
-    </Tooltip>
+    <InfoTooltip content={explicacion} className="underline decoration-dotted underline-offset-2">
+      {texto}
+    </InfoTooltip>
   );
 }
 
 export function ResultCard({ resultado }: ResultCardProps) {
   const { t, i18n } = useTranslation();
+  const [ssDesplegada, setSsDesplegada] = useState(false);
   const { retencionIrpf, seguridadSocial } = resultado;
 
   const locale = i18n.language?.startsWith("eu") ? "eu-ES" : "es-ES";
@@ -130,55 +131,82 @@ export function ResultCard({ resultado }: ResultCardProps) {
                   −{formatoEuro.format(retencionIrpf.importeAnual)}
                 </TableCell>
               </TableRow>
-              <TableRow>
-                <TableCell className="pt-4 font-medium">{t("result.seguridadSocial")}</TableCell>
-                <TableCell className="pt-4" />
-                <TableCell className="pt-4" />
-              </TableRow>
-              <TableRow>
-                <TableCell className="pl-4">
-                  —{" "}
-                  <EtiquetaConTooltip
-                    texto={t("result.ssContingenciasComunes")}
-                    explicacion={t("result.ssContingenciasComunesTooltip")}
-                  />
+              <TableRow
+                role="button"
+                tabIndex={0}
+                aria-expanded={ssDesplegada}
+                className="cursor-pointer select-none hover:bg-muted/50"
+                onClick={() => setSsDesplegada((v) => !v)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setSsDesplegada((v) => !v);
+                  }
+                }}
+              >
+                <TableCell className="pt-4 font-medium">
+                  <span className="inline-flex items-center gap-1">
+                    <ChevronRight
+                      className={cn("size-4 transition-transform", ssDesplegada && "rotate-90")}
+                    />
+                    {t("result.seguridadSocial")}
+                  </span>
                 </TableCell>
-                <TableCell className="text-right text-destructive">
-                  −{formatoEuro.format(seguridadSocial.desglose.contingenciasComunes)}
+                <TableCell className="pt-4 text-right text-destructive">
+                  {!ssDesplegada && `−${formatoEuro.format(seguridadSocial.importeMensual)}`}
                 </TableCell>
-                <TableCell className="text-right text-destructive">
-                  −{formatoEuro.format(seguridadSocial.desglose.contingenciasComunes * resultado.numeroPagas)}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="pl-4">— {t("result.ssDesempleo")}</TableCell>
-                <TableCell className="text-right text-destructive">
-                  −{formatoEuro.format(seguridadSocial.desglose.desempleo)}
-                </TableCell>
-                <TableCell className="text-right text-destructive">
-                  −{formatoEuro.format(seguridadSocial.desglose.desempleo * resultado.numeroPagas)}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="pl-4">— {t("result.ssFormacionProfesional")}</TableCell>
-                <TableCell className="text-right text-destructive">
-                  −{formatoEuro.format(seguridadSocial.desglose.formacionProfesional)}
-                </TableCell>
-                <TableCell className="text-right text-destructive">
-                  −{formatoEuro.format(seguridadSocial.desglose.formacionProfesional * resultado.numeroPagas)}
+                <TableCell className="pt-4 text-right text-destructive">
+                  {!ssDesplegada && `−${formatoEuro.format(seguridadSocial.importeAnual)}`}
                 </TableCell>
               </TableRow>
-              <TableRow>
-                <TableCell className="pl-4">
-                  — <EtiquetaConTooltip texto={t("result.ssMei")} explicacion={t("result.ssMeiTooltip")} />
-                </TableCell>
-                <TableCell className="text-right text-destructive">
-                  −{formatoEuro.format(seguridadSocial.desglose.mei)}
-                </TableCell>
-                <TableCell className="text-right text-destructive">
-                  −{formatoEuro.format(seguridadSocial.desglose.mei * resultado.numeroPagas)}
-                </TableCell>
-              </TableRow>
+              {ssDesplegada && (
+                <>
+                  <TableRow>
+                    <TableCell className="pl-4">
+                      —{" "}
+                      <EtiquetaConTooltip
+                        texto={t("result.ssContingenciasComunes")}
+                        explicacion={t("result.ssContingenciasComunesTooltip")}
+                      />
+                    </TableCell>
+                    <TableCell className="text-right text-destructive">
+                      −{formatoEuro.format(seguridadSocial.desglose.contingenciasComunes)}
+                    </TableCell>
+                    <TableCell className="text-right text-destructive">
+                      −{formatoEuro.format(seguridadSocial.desglose.contingenciasComunes * resultado.numeroPagas)}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="pl-4">— {t("result.ssDesempleo")}</TableCell>
+                    <TableCell className="text-right text-destructive">
+                      −{formatoEuro.format(seguridadSocial.desglose.desempleo)}
+                    </TableCell>
+                    <TableCell className="text-right text-destructive">
+                      −{formatoEuro.format(seguridadSocial.desglose.desempleo * resultado.numeroPagas)}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="pl-4">— {t("result.ssFormacionProfesional")}</TableCell>
+                    <TableCell className="text-right text-destructive">
+                      −{formatoEuro.format(seguridadSocial.desglose.formacionProfesional)}
+                    </TableCell>
+                    <TableCell className="text-right text-destructive">
+                      −{formatoEuro.format(seguridadSocial.desglose.formacionProfesional * resultado.numeroPagas)}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="pl-4">
+                      — <EtiquetaConTooltip texto={t("result.ssMei")} explicacion={t("result.ssMeiTooltip")} />
+                    </TableCell>
+                    <TableCell className="text-right text-destructive">
+                      −{formatoEuro.format(seguridadSocial.desglose.mei)}
+                    </TableCell>
+                    <TableCell className="text-right text-destructive">
+                      −{formatoEuro.format(seguridadSocial.desglose.mei * resultado.numeroPagas)}
+                    </TableCell>
+                  </TableRow>
+                </>
+              )}
               <TableRow className="font-semibold">
                 <TableCell>{t("result.salarioNeto")}</TableCell>
                 <TableCell className="text-right">{formatoEuro.format(resultado.salarioNetoMensual)}</TableCell>
