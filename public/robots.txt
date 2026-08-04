@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://soldata-garbia.web.app/sitemap.xml
