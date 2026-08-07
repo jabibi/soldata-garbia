@@ -45,8 +45,12 @@ export function ConfiguracionPanel() {
     if (!isAdmin) return;
 
     return onSnapshot(doc(db, "configuracion", "parametros"), (snap) => {
-      if (snap.exists()) {
-        const data = snap.data();
+      const data = snap.exists() ? snap.data() : null;
+      // `data.territorios` puede faltar si el documento se guardó con el
+      // esquema antiguo (previo a la configuración por territorio) — en ese
+      // caso se recurre a los valores por defecto, igual que hace el backend
+      // (`configuracionDesdeFirestore`) cuando la validación falla.
+      if (data?.territorios && data?.seguridadSocial) {
         setConfiguracion({
           territorios: data.territorios,
           seguridadSocial: data.seguridadSocial,
