@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Menu } from "lucide-react";
+import { Home, Menu } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
@@ -13,12 +13,27 @@ export function NavMenu() {
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
 
-  const items = [
-    { to: "/", label: t("nav.inicio") },
+  const extras = [
     user && { to: "/history", label: t("nav.historial") },
     isAdmin && { to: "/settings", label: t("nav.configuracion") },
     isAdmin && { to: "/admin", label: t("nav.administracion") },
   ].filter((item): item is { to: string; label: string } => Boolean(item));
+
+  if (extras.length === 0) {
+    return (
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        aria-label={t("nav.inicio")}
+        render={<Link to="/" />}
+      >
+        <Home className="size-5" />
+      </Button>
+    );
+  }
+
+  const items = [{ to: "/", label: t("nav.inicio") }, ...extras];
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

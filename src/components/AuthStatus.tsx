@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { CircleUserRound, LogIn } from "lucide-react";
+import { CircleUserRound, LogIn, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAuth } from "@/context/AuthContext";
@@ -31,9 +31,13 @@ export function AuthStatus() {
       <PopoverContent className="w-72 p-4">
         {user ? (
           <div className="space-y-3">
-            <p className="text-sm">
+            <p className="flex items-center gap-1.5 text-sm">
               <span className="text-muted-foreground">{user.email}</span>
-              {isAdmin && <span className="text-foreground font-medium"> · {t("auth.admin")}</span>}
+              {isAdmin && (
+                <span title={t("auth.admin")} className="inline-flex">
+                  <ShieldCheck className="size-4 text-foreground" aria-label={t("auth.admin")} />
+                </span>
+              )}
             </p>
             <Button
               type="button"

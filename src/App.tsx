@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Link, Navigate, Route, Routes } from "react-router-dom";
 import { CalculatorForm } from "@/components/CalculatorForm";
@@ -63,7 +63,11 @@ function Calculadora() {
 }
 
 function App() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  useEffect(() => {
+    document.title = `${t("app.title")} — ${t("app.subtitle")}`;
+  }, [t, i18n.language]);
 
   return (
     <AuthProvider>
