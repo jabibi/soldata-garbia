@@ -3,11 +3,13 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://soldata-garbia.web.app/</loc>
-    <lastmod>2026-08-04</lastmod>
+    <lastmod>2026-08-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
-    <!-- Indicar a Google las versiones bilingües (SEO i18n) -->
-    <xhtml:link rel="alternate" hreflang="eu" href="https://soldata-garbia.web.app/?lang=eu"/>
+    <!-- Indicar a Google las versiones en cada idioma (SEO i18n) -->
     <xhtml:link rel="alternate" hreflang="es" href="https://soldata-garbia.web.app/?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="eu" href="https://soldata-garbia.web.app/?lang=eu"/>
+    <xhtml:link rel="alternate" hreflang="gl" href="https://soldata-garbia.web.app/?lang=gl"/>
+    <xhtml:link rel="alternate" hreflang="ca" href="https://soldata-garbia.web.app/?lang=ca"/>
   </url>
 </urlset>

@@ -1,6 +1,14 @@
 import { z } from "zod";
-import { TABLA_RETENCION_ALAVA_2026, TABLA_MINORACION_DISCAPACIDAD_2026, TramoRetencion, TramoMinoracionDiscapacidad } from "./retencionAlava";
+import {
+  TABLA_RETENCION_ARABA_BIZKAIA_GIPUZKOA_2026,
+  TABLA_MINORACION_ARABA_BIZKAIA_GIPUZKOA_2026,
+  TABLA_RETENCION_NAFARROA_2026,
+  TABLA_MINORACION_NAFARROA_2026,
+  TramoRetencion,
+  TramoMinoracionDiscapacidad,
+} from "./retencionIrpf";
 import { SS_2026 } from "./seguridadSocial";
+import { TERRITORIOS_CON_TABLA, TerritorioConTabla } from "./types";
 import type { ConfiguracionResuelta } from "./calculadora";
 
 /**
@@ -29,13 +37,20 @@ export interface SeguridadSocialConfig {
   mei: number;
 }
 
-export interface ConfiguracionCalculo {
+/** Tablas de retención IRPF y minoración por discapacidad de un territorio foral. */
+export interface ConfiguracionTerritorio {
   tablaRetencionIrpf: TramoRetencionDoc[];
-  /** Si no es null, sustituye la búsqueda en tablaRetencionIrpf. */
-  irpfPorcentajeFijo: number | null;
   tablaMinoracionDiscapacidad: TramoMinoracionDoc[];
-  /** Si no es null, sustituye la búsqueda en tablaMinoracionDiscapacidad para cualquier grado != "ninguno". */
-  minoracionPuntosFijo: number | null;
+}
+
+export interface ConfiguracionCalculo {
+  /**
+   * Solo los territorios forales (`TerritorioConTabla`) tienen tabla
+   * editable. El territorio "estado" (régimen común) no aparece aquí: se
+   * calcula con un algoritmo fijo, ver `retencionEstado.ts`.
+   */
+  territorios: Record<TerritorioConTabla, ConfiguracionTerritorio>;
+  /** Las tasas de Seguridad Social son estatales, no varían por territorio. */
   seguridadSocial: SeguridadSocialConfig;
 }
 
@@ -75,21 +90,28 @@ const tramoMinoracionSchema = z.object({
   bc: z.number().min(0).max(100),
 });
 
-export const configuracionSchema = z.object({
+const configuracionTerritorioSchema = z.object({
   tablaRetencionIrpf: z
     .array(tramoRetencionSchema)
     .min(1)
     .refine(tramosAscendentesConUltimoSinLimite, {
       message: "Los tramos deben estar en orden ascendente y solo el último puede no tener límite.",
     }),
-  irpfPorcentajeFijo: z.number().min(0).max(100).nullable(),
   tablaMinoracionDiscapacidad: z
     .array(tramoMinoracionSchema)
     .min(1)
     .refine(tramosAscendentesConUltimoSinLimite, {
       message: "Los tramos deben estar en orden ascendente y solo el último puede no tener límite.",
     }),
-  minoracionPuntosFijo: z.number().min(0).max(100).nullable(),
+});
+
+export const configuracionSchema = z.object({
+  territorios: z.object({
+    araba: configuracionTerritorioSchema,
+    bizkaia: configuracionTerritorioSchema,
+    gipuzkoa: configuracionTerritorioSchema,
+    nafarroa: configuracionTerritorioSchema,
+  }),
   seguridadSocial: z.object({
     baseMaximaMensual: z.number().positive(),
     contingenciasComunes: z.number().min(0).max(100),
@@ -109,18 +131,46 @@ export function configuracionDesdeFirestore(data: unknown): ConfiguracionCalculo
   return configuracionSchema.parse(data);
 }
 
-export const CONFIGURACION_DEFECTO: ConfiguracionCalculo = {
-  tablaRetencionIrpf: TABLA_RETENCION_ALAVA_2026.map((tramo) => ({
+function aDoc(tabla: TramoRetencion[]): TramoRetencionDoc[] {
+  return tabla.map((tramo) => ({
     hasta: Number.isFinite(tramo.hasta) ? tramo.hasta : null,
     porcentajes: tramo.porcentajes,
-  })),
-  irpfPorcentajeFijo: null,
-  tablaMinoracionDiscapacidad: TABLA_MINORACION_DISCAPACIDAD_2026.map((tramo) => ({
+  }));
+}
+
+function aDocMinoracion(tabla: TramoMinoracionDiscapacidad[]): TramoMinoracionDoc[] {
+  return tabla.map((tramo) => ({
     hasta: Number.isFinite(tramo.hasta) ? tramo.hasta : null,
     a: tramo.a,
     bc: tramo.bc,
-  })),
-  minoracionPuntosFijo: null,
+  }));
+}
+
+/**
+ * Valores de fábrica: cada territorio foral tiene su propia tabla real de
+ * 2026 (ver citas legales en `retencionIrpf.ts`) — Araba, Bizkaia y Gipuzkoa
+ * comparten valores porque están, en efecto, armonizados y así lo confirma
+ * cada norma foral por separado; Nafarroa tiene una tabla propia y distinta.
+ */
+export const CONFIGURACION_DEFECTO: ConfiguracionCalculo = {
+  territorios: {
+    araba: {
+      tablaRetencionIrpf: aDoc(TABLA_RETENCION_ARABA_BIZKAIA_GIPUZKOA_2026),
+      tablaMinoracionDiscapacidad: aDocMinoracion(TABLA_MINORACION_ARABA_BIZKAIA_GIPUZKOA_2026),
+    },
+    bizkaia: {
+      tablaRetencionIrpf: aDoc(TABLA_RETENCION_ARABA_BIZKAIA_GIPUZKOA_2026),
+      tablaMinoracionDiscapacidad: aDocMinoracion(TABLA_MINORACION_ARABA_BIZKAIA_GIPUZKOA_2026),
+    },
+    gipuzkoa: {
+      tablaRetencionIrpf: aDoc(TABLA_RETENCION_ARABA_BIZKAIA_GIPUZKOA_2026),
+      tablaMinoracionDiscapacidad: aDocMinoracion(TABLA_MINORACION_ARABA_BIZKAIA_GIPUZKOA_2026),
+    },
+    nafarroa: {
+      tablaRetencionIrpf: aDoc(TABLA_RETENCION_NAFARROA_2026),
+      tablaMinoracionDiscapacidad: aDocMinoracion(TABLA_MINORACION_NAFARROA_2026),
+    },
+  },
   seguridadSocial: {
     baseMaximaMensual: SS_2026.baseMaximaMensual,
     contingenciasComunes: SS_2026.contingenciasComunes.trabajador * 100,
@@ -164,18 +214,22 @@ function resolverTablaMinoracion(tramos: TramoMinoracionDoc[]): TramoMinoracionD
  * Convierte la configuración en su forma serializable (Firestore/JSON, con
  * `hasta: null` para el último tramo y tasas de SS en porcentaje) a la forma
  * interna que consumen las funciones de dominio (`hasta: Infinity`, tasas
- * como fracciones, y `desde` derivado del tramo anterior).
+ * como fracciones, y `desde` derivado del tramo anterior), para los cuatro
+ * territorios forales.
  */
 export function resolverConfiguracion(configuracion: ConfiguracionCalculo): ConfiguracionResuelta {
-  const tablaRetencionIrpf = resolverTablaRetencion(configuracion.tablaRetencionIrpf);
-  const tablaMinoracionDiscapacidad = resolverTablaMinoracion(configuracion.tablaMinoracionDiscapacidad);
+  const territorios = {} as ConfiguracionResuelta["territorios"];
+  for (const id of TERRITORIOS_CON_TABLA) {
+    const territorio = configuracion.territorios[id];
+    territorios[id] = {
+      tablaRetencionIrpf: resolverTablaRetencion(territorio.tablaRetencionIrpf),
+      tablaMinoracionDiscapacidad: resolverTablaMinoracion(territorio.tablaMinoracionDiscapacidad),
+    };
+  }
 
   const ss = configuracion.seguridadSocial;
   return {
-    tablaRetencionIrpf,
-    irpfPorcentajeFijo: configuracion.irpfPorcentajeFijo,
-    tablaMinoracionDiscapacidad,
-    minoracionPuntosFijo: configuracion.minoracionPuntosFijo,
+    territorios,
     seguridadSocial: {
       baseMaximaMensual: ss.baseMaximaMensual,
       contingenciasComunes: ss.contingenciasComunes / 100,

@@ -1,25 +1,29 @@
-import { CalculoNominaInput, CalculoNominaResultado } from "./types";
-import { calcularTipoRetencionAlava, TramoRetencion, TramoMinoracionDiscapacidad } from "./retencionAlava";
+import { CalculoNominaInput, CalculoNominaResultado, TerritorioConTabla } from "./types";
+import { calcularTipoRetencion, TramoRetencion, TramoMinoracionDiscapacidad } from "./retencionIrpf";
+import { calcularTipoRetencionEstado } from "./retencionEstado";
 import { calcularCotizacionSSMensual, SeguridadSocialTasas } from "./seguridadSocial";
+
+/** Tablas de retención IRPF y minoración por discapacidad ya resueltas de un territorio foral. */
+export interface ConfiguracionTerritorioResuelta {
+  tablaRetencionIrpf: TramoRetencion[];
+  tablaMinoracionDiscapacidad: TramoMinoracionDiscapacidad[];
+}
 
 /**
  * Configuración de cálculo ya resuelta a la forma interna que usan las
  * funciones de dominio (tramos con `hasta: Infinity` en vez de `null`, tasas
  * de Seguridad Social como fracciones). Se obtiene a partir de
  * `ConfiguracionCalculo` (la forma serializable en Firestore) mediante
- * `resolverConfiguracion`, ver `domain/configuracion.ts`.
+ * `resolverConfiguracion`, ver `domain/configuracion.ts`. Solo cubre los
+ * territorios forales con tabla; "estado" se calcula aparte con un algoritmo.
  */
 export interface ConfiguracionResuelta {
-  tablaRetencionIrpf: TramoRetencion[];
-  irpfPorcentajeFijo: number | null;
-  tablaMinoracionDiscapacidad: TramoMinoracionDiscapacidad[];
-  minoracionPuntosFijo: number | null;
+  territorios: Record<TerritorioConTabla, ConfiguracionTerritorioResuelta>;
   seguridadSocial: SeguridadSocialTasas;
 }
 
 /**
- * Calcula el desglose de nómina bruto -> neto para el Territorio Histórico
- * de Álava.
+ * Calcula el desglose de nómina bruto -> neto para el territorio elegido.
  *
  * Simplificación asumida (igual que la mayoría de calculadoras de sueldo
  * neto públicas, p.ej. la del Santander): el bruto anual se divide a partes
@@ -33,24 +37,46 @@ export function calcularNomina(
   input: CalculoNominaInput,
   configuracion: ConfiguracionResuelta,
 ): CalculoNominaResultado {
-  const { salarioBrutoAnual, numeroPagas, numeroDescendientes, tipoContrato, gradoDiscapacidad } = input;
+  const {
+    salarioBrutoAnual,
+    numeroPagas,
+    numeroDescendientes,
+    tipoContrato,
+    gradoDiscapacidad,
+    territorio,
+    irpfPorcentajeManual,
+  } = input;
 
   const salarioBrutoMensual = salarioBrutoAnual / numeroPagas;
 
-  const retencion = calcularTipoRetencionAlava(
-    salarioBrutoAnual,
-    numeroDescendientes,
-    gradoDiscapacidad,
-    configuracion.tablaRetencionIrpf,
-    configuracion.irpfPorcentajeFijo,
-    configuracion.tablaMinoracionDiscapacidad,
-    configuracion.minoracionPuntosFijo,
-  );
-  const irpfImporteMensual = salarioBrutoMensual * (retencion.tipoAplicado / 100);
-  const irpfImporteAnual = irpfImporteMensual * numeroPagas;
-
   const ss = calcularCotizacionSSMensual(salarioBrutoMensual, tipoContrato, configuracion.seguridadSocial);
   const ssImporteAnual = ss.importeMensual * numeroPagas;
+
+  let tipoTablaGeneral: number;
+  let puntosMinoracionDiscapacidad: number;
+  let tipoBase: number;
+
+  if (territorio === "estado") {
+    tipoBase = calcularTipoRetencionEstado(salarioBrutoAnual, numeroDescendientes, gradoDiscapacidad, ssImporteAnual);
+    tipoTablaGeneral = tipoBase;
+    puntosMinoracionDiscapacidad = 0;
+  } else {
+    const tablasTerritorio = configuracion.territorios[territorio];
+    const retencion = calcularTipoRetencion(
+      salarioBrutoAnual,
+      numeroDescendientes,
+      gradoDiscapacidad,
+      tablasTerritorio.tablaRetencionIrpf,
+      tablasTerritorio.tablaMinoracionDiscapacidad,
+    );
+    tipoTablaGeneral = retencion.tipoTablaGeneral;
+    puntosMinoracionDiscapacidad = retencion.puntosMinoracionDiscapacidad;
+    tipoBase = retencion.tipoAplicado;
+  }
+
+  const tipoAplicado = irpfPorcentajeManual ?? tipoBase;
+  const irpfImporteMensual = salarioBrutoMensual * (tipoAplicado / 100);
+  const irpfImporteAnual = irpfImporteMensual * numeroPagas;
 
   const salarioNetoMensual = salarioBrutoMensual - irpfImporteMensual - ss.importeMensual;
   const salarioNetoAnual = salarioNetoMensual * numeroPagas;
@@ -59,10 +85,12 @@ export function calcularNomina(
     salarioBrutoAnual,
     salarioBrutoMensual,
     numeroPagas,
+    territorio,
     retencionIrpf: {
-      tipoAplicado: retencion.tipoAplicado,
-      tipoTablaGeneral: retencion.tipoTablaGeneral,
-      puntosMinoracionDiscapacidad: retencion.puntosMinoracionDiscapacidad,
+      tipoAplicado,
+      tipoTablaGeneral,
+      puntosMinoracionDiscapacidad,
+      manual: irpfPorcentajeManual !== null,
       importeMensual: irpfImporteMensual,
       importeAnual: irpfImporteAnual,
     },

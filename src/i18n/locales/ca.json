@@ -1,7 +1,7 @@
 {
   "app": {
     "title": "Salari Net",
-    "subtitle": "Calculadora de salari net — Territori Històric d'Àlaba"
+    "subtitle": "Calculadora de salari net — Araba, Bizkaia, Gipuzkoa, Nafarroa i la resta d'Espanya"
   },
   "form": {
     "cardTitle": "Les teves dades",
@@ -22,7 +22,10 @@
     "discapacidad33_65_conMovilidad": "33% - 65%, amb mobilitat reduïda",
     "discapacidad65OMas": "65% o superior",
     "submit": "Calcular salari net",
-    "submitting": "Calculant..."
+    "submitting": "Calculant...",
+    "irpfManualLabel": "Modificar % IRPF (opcional)",
+    "irpfManualAyuda": "Si ja coneixes el teu percentatge real de retenció d'IRPF, indica'l aquí perquè el càlcul l'utilitzi directament en lloc d'obtenir-lo de la taula del territori escollit.",
+    "irpfManualPlaceholder": "Utilitzar taula"
   },
   "result": {
     "cardTitle": "El teu salari net",
@@ -44,7 +47,8 @@
     "ssMei": "MEI",
     "ssMeiTooltip": "Mecanisme d'Equitat Intergeneracional: cotització addicional destinada a reforçar la sostenibilitat futura de les pensions.",
     "salarioNeto": "Salari net",
-    "disclaimer": "Càlcul orientatiu segons la taula de retenció de l'IRPF de la Diputació Foral d'Àlaba (Decret Foral 42/2025) i les cotitzacions a la Seguretat Social vigents el 2026 (Ordre PJC/297/2026). No substitueix la teva nòmina real ni una consulta amb l'assessoria de la teva empresa o amb Hisenda."
+    "disclaimer": "Càlcul orientatiu segons la taula de retenció de l'IRPF i les cotitzacions a la Seguretat Social configurades per al territori seleccionat. No substitueix la teva nòmina real ni una consulta amb l'assessoria de la teva empresa o amb Hisenda.",
+    "disclaimerEstado": "Per a \"Resta d'Espanya\" el percentatge és una aproximació calculada amb el procediment general de l'Agència Tributària, assumint que no tens cònjuge ni ascendents a càrrec. No substitueix el càlcul exacte de la teva situació personal."
   },
   "errors": {
     "calculo": "No s'ha pogut calcular el resultat. Torna-ho a provar."
@@ -90,19 +94,13 @@
     "ssDesempleoTemporal": "Atur — temporal (%)",
     "ssFormacionProfesional": "Formació professional (%)",
     "ssMei": "MEI (%)",
+    "territorioTitle": "Territori",
     "irpfTitle": "Taula de retenció IRPF",
-    "irpfFijoLabel": "Percentatge IRPF fix (opcional)",
-    "irpfFijoPlaceholder": "Utilitzar taula",
-    "irpfFijoAyuda": "Si l'omples, s'aplica aquest percentatge directament i s'ignora la taula de trams.",
     "irpfHasta": "Fins a (€)",
     "sinLimite": "Sense límit",
     "agregarTramo": "Afegir tram",
     "eliminarTramo": "Eliminar",
-    "quitarFijo": "Treure valor fix",
     "minoracionTitle": "Minoració per discapacitat",
-    "minoracionFijoLabel": "Punts de minoració fixos (opcional)",
-    "minoracionFijoPlaceholder": "Utilitzar taula",
-    "minoracionFijoAyuda": "Si l'omples, aquests punts s'aplicaran a qualsevol grau de discapacitat reconegut, ignorant la taula.",
     "minoracionPuntosA": "Punts (33%-65%, sense mobilitat reduïda)",
     "minoracionPuntosBc": "Punts (33%-65% amb mobilitat, o ≥65%)",
     "restaurar": "Restaurar valors per defecte",
@@ -110,5 +108,13 @@
     "guardando": "Desant...",
     "guardadoOk": "Configuració desada.",
     "error": "No s'ha pogut desar la configuració. Comprova els valors i torna-ho a provar."
+  },
+  "territorio": {
+    "selector": "Territori",
+    "araba": "Araba",
+    "bizkaia": "Bizkaia",
+    "gipuzkoa": "Gipuzkoa",
+    "nafarroa": "Nafarroa",
+    "estado": "Resta d'Espanya"
   }
 }

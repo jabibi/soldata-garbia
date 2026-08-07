@@ -6,22 +6,38 @@ export type GradoDiscapacidad =
   | "33_65_con_movilidad"
   | "65_o_mas";
 
+/**
+ * Territorios forales con tabla de retención IRPF propia, admin-editable.
+ * "estado" (régimen común) no tiene tabla: se calcula con un algoritmo en
+ * las Functions — por eso no forma parte de `ConfiguracionCalculo`.
+ */
+export const TERRITORIOS_CON_TABLA = ["araba", "bizkaia", "gipuzkoa", "nafarroa"] as const;
+export type TerritorioConTabla = (typeof TERRITORIOS_CON_TABLA)[number];
+
+/** Todos los territorios seleccionables en la calculadora, tabla + "estado". */
+export const TERRITORIOS = [...TERRITORIOS_CON_TABLA, "estado"] as const;
+export type Territorio = (typeof TERRITORIOS)[number];
+
 export interface CalculoNominaInput {
   salarioBrutoAnual: number;
   numeroPagas: 12 | 14;
   numeroDescendientes: number;
   tipoContrato: TipoContrato;
   gradoDiscapacidad: GradoDiscapacidad;
+  territorio: Territorio;
+  irpfPorcentajeManual: number | null;
 }
 
 export interface CalculoNominaResultado {
   salarioBrutoAnual: number;
   salarioBrutoMensual: number;
   numeroPagas: 12 | 14;
+  territorio: Territorio;
   retencionIrpf: {
     tipoAplicado: number;
     tipoTablaGeneral: number;
     puntosMinoracionDiscapacidad: number;
+    manual: boolean;
     importeMensual: number;
     importeAnual: number;
   };
@@ -68,10 +84,12 @@ export interface SeguridadSocialConfig {
   mei: number;
 }
 
-export interface ConfiguracionCalculo {
+export interface ConfiguracionTerritorio {
   tablaRetencionIrpf: TramoRetencionDoc[];
-  irpfPorcentajeFijo: number | null;
   tablaMinoracionDiscapacidad: TramoMinoracionDoc[];
-  minoracionPuntosFijo: number | null;
+}
+
+export interface ConfiguracionCalculo {
+  territorios: Record<TerritorioConTabla, ConfiguracionTerritorio>;
   seguridadSocial: SeguridadSocialConfig;
 }

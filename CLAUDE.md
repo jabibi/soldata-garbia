@@ -50,44 +50,72 @@ rules/indexes per `firebase.json`).
 ## Architecture
 
 **Domain logic is isolated in `functions/src/domain/`** and is pure/framework-free:
-- `retencionAlava.ts` — IRPF withholding-rate tables and lookup (`calcularTipoRetencionAlava`), keyed by annual
-  gross income, number of dependents, and disability degree.
+- `retencionIrpf.ts` — IRPF withholding-rate/minoración tables and table lookup (`calcularTipoRetencion`) for the
+  four **foral** territories, keyed by annual gross income, number of dependents, and disability degree.
+  Territory-agnostic itself: it just operates on whichever table is passed in.
+- `retencionEstado.ts` — a **formula-based** (not table-based) calculation (`calcularTipoRetencionEstado`) for the
+  "estado" (régimen común) territory — see below, this is structurally different from the other four.
 - `seguridadSocial.ts` — Social Security contribution rates and monthly calculation
-  (`calcularCotizacionSSMensual`), which differ by contract type (`indefinido` vs `temporal`).
-- `calculadora.ts` — orchestrates the two into a full gross-to-net breakdown (`calcularNomina`).
+  (`calcularCotizacionSSMensual`), which differ by contract type (`indefinido` vs `temporal`). SS rates are
+  **national**, not per-territory, and apply the same regardless of `territorio`.
+- `calculadora.ts` — orchestrates the above into a full gross-to-net breakdown (`calcularNomina`): branches on
+  `input.territorio` to pick table-lookup vs. formula, then applies the shared SS calculation and the optional
+  user-supplied manual override.
 
-These tables are legally dated (currently the 2026 Álava/state figures, with BOTHA/BOE citations in comments) and
-now serve as **factory defaults only** — the live values an admin has edited take precedence, see below.
-
-**`functions/src/domain/types.ts` and `src/lib/types.ts` are hand-duplicated**, as are
-`functions/src/domain/configuracion.ts`'s types/`CONFIGURACION_DEFECTO` and their frontend counterparts in
-`src/lib/types.ts`/`src/lib/configuracionDefecto.ts`. There's no shared package between the two npm projects, so
-all of these must be kept in sync manually whenever a shape changes.
+**The calculator supports five territories** (`Territorio` = `TerritorioConTabla | "estado"`, `TERRITORIOS` in
+`types.ts`), but they are **not structurally uniform**:
+- **`TerritorioConTabla`** = `"araba" | "bizkaia" | "gipuzkoa" | "nafarroa"` — each has its own independently
+  admin-editable IRPF withholding table and disability-minoración table
+  (`ConfiguracionCalculo.territorios: Record<TerritorioConTabla, ConfiguracionTerritorio>`, four keys, no
+  "estado"). All four tables in `retencionIrpf.ts` are **real, legally-sourced 2026 figures**, not placeholders:
+  Araba/Bizkaia/Gipuzkoa's tables are — confirmed independently against each territory's own Decreto Foral, not
+  assumed — byte-for-byte identical (`TABLA_RETENCION_ARABA_BIZKAIA_GIPUZKOA_2026`), while Nafarroa has a
+  genuinely different table (`TABLA_RETENCION_NAFARROA_2026`, different brackets, and its own minoración grouping
+  by ≥33%/≥65% rather than sin/con-movilidad). Nafarroa's real table has 11 dependant columns (0..."10 o más");
+  since this app's UI/data model caps at 7 (0..5 and "más de 5"), columns 6-10 are deliberately collapsed into
+  "más de 5" using Nafarroa's real value for exactly 6 dependants — a documented, deliberate approximation for
+  large families, not an error. Nafarroa's ≥33%/≥65% minoración split is likewise mapped onto this app's "a"/"bc"
+  columns as faithfully as the fixed 2-column model allows (see comments in `retencionIrpf.ts` for the exact
+  mapping and its one known edge-case inaccuracy).
+- **`"estado"`** (régimen común, i.e. all of Spain outside the four foral territories) has **no official simple
+  table** — the AEAT computes it via a genuine formula/algorithm (mínimo personal y familiar, escala progresiva,
+  reducciones) that depends on inputs this app doesn't collect (marital status, ascendientes). Because there is
+  nothing to store per-territory here, `"estado"` is intentionally **excluded** from
+  `ConfiguracionCalculo.territorios` and has **no admin UI** — `ConfiguracionPanel`'s territory tabs only iterate
+  `TERRITORIOS_CON_TABLA` (4 tabs), while `CalculatorForm`'s selector iterates the full `TERRITORIOS` (5 options).
+  `calcularTipoRetencionEstado` reproduces the official 2026 AEAT algorithm (art. 19/20/60/85 LIRPF figures,
+  hardcoded with citations in `retencionEstado.ts`) under a documented simplifying assumption: single taxpayer,
+  no cónyuge/ascendientes a cargo. `ResultCard` shows an extra disclaimer (`result.disclaimerEstado`) only when
+  `resultado.territorio === "estado"` to flag this.
 
 **Calculation parameters are admin-editable at runtime**, stored in a single Firestore document
 `configuracion/parametros` (`functions/src/domain/configuracion.ts`):
-- The document holds the IRPF withholding table, the disability-minoration table, and the Social Security rates,
-  all as **whole-number percentages** (e.g. `4.7`, not `0.047` — conversion to a fraction happens only inside the
-  calculation). The unbounded last tramo of each table is stored as `hasta: null` (Firestore has no `Infinity`);
-  `resolverConfiguracion` converts `null` → `Infinity` and derives each tramo's `desde` from the previous tramo's
-  `hasta` + 0.01 — `desde` itself is never stored or admin-edited, which rules out gaps/overlaps by construction.
-- `calcularTipoRetencionAlava`/`calcularCotizacionSSMensual` no longer read the hardcoded tables directly; they
-  take the resolved tables/rates as parameters. `calcularNomina` (`calculadora.ts`) takes a resolved
-  `ConfiguracionCalculo` alongside the payroll input.
+- The document holds, per foral territory, the IRPF withholding table and the disability-minoración table, plus
+  one shared (non-per-territory) Social Security rates object — all as **whole-number percentages** (e.g. `4.7`,
+  not `0.047` — conversion to a fraction happens only inside the calculation). The unbounded last tramo of each
+  table is stored as `hasta: null` (Firestore has no `Infinity`); `resolverConfiguracion` converts `null` →
+  `Infinity` and derives each tramo's `desde` from the previous tramo's `hasta` + 0.01 — `desde` itself is never
+  stored or admin-edited, which rules out gaps/overlaps by construction. This resolution happens independently
+  per territory.
+- `calcularTipoRetencion`/`calcularCotizacionSSMensual` don't read the hardcoded tables directly; they take the
+  resolved tables/rates as parameters. `calcularNomina` (`calculadora.ts`) takes a resolved `ConfiguracionResuelta`
+  (the four foral territories only) alongside the payroll input.
 - If the Firestore doc is missing or fails validation (e.g. hand-edited into an inconsistent shape via the
   Firebase console), `functions/src/index.ts` falls back to `CONFIGURACION_DEFECTO` (the same hardcoded 2026
   tables) rather than failing the calculation — past `historial` entries are unaffected either way, since they
   store the resolved result, not a reference to the config.
 - Updating the tables/rates only ever happens through the `actualizarConfiguracionCalculo` callable (admin-only,
-  zod-validated, full-document overwrite — never a partial merge, so the tables and rates can't drift out of sync
-  with each other).
-- Both the IRPF table and the minoración table also support a **fixed override** independent of the table:
-  `irpfPorcentajeFijo`/`minoracionPuntosFijo` (`number | null`). When set, `calcularTipoRetencionAlava` uses that
-  value directly instead of looking up the table (`?? ` is used deliberately, since a fixed value of `0` must not
-  fall through to the table). The minoración fixed value is a single number applied to *any* non-`"ninguno"`
-  disability degree — it doesn't distinguish the table's "sin movilidad" vs "con movilidad/≥65%" columns. The
-  table itself stays visible/editable regardless of whether a fixed value is set; clearing the fixed value (set to
-  `null`) reverts to table-driven behavior.
+  zod-validated, full-document overwrite of all four foral territories at once — never a partial merge, so a
+  territory's table and rates can't drift out of sync with each other).
+- There is intentionally **no admin-configurable fixed override** for the IRPF table or the minoración table
+  (an earlier `irpfPorcentajeFijo`/`minoracionPuntosFijo` pair on `ConfiguracionCalculo` was removed — not useful
+  enough in practice to justify per-territory duplication, and wouldn't even make sense for "estado"'s
+  formula-based calculation). Instead, `CalculoNominaInput.irpfPorcentajeManual` (`number | null`) is a
+  **per-calculation, user-supplied** override entered directly in `CalculatorForm` — if set, `calculadora.ts`
+  applies it as the final `tipoAplicado` uniformly regardless of which territory/method computed the base rate,
+  bypassing both the table lookup/minoración (foral) or the formula (estado) entirely.
+  `CalculoNominaResultado.retencionIrpf.manual` records whether this happened, so `ResultCard` can suppress the
+  now-irrelevant "tabla general − puntos" note.
 
 **All callable (`onCall`) functions must set `cors: true` explicitly** — it is not on by default in this project,
 and a missing `cors: true` produces a browser-side preflight failure with no server-side error/log at all (easy to
@@ -132,16 +160,23 @@ formatting — use it instead of re-deriving the tag inline. `src/lib/fecha.ts`'
 special-cases only `eu` for ISO (YYYY/MM/DD) order; Galician and Catalan use the DD/MM/YYYY order like Spanish.
 
 **Language switcher** (`LanguageSwitcher.tsx`): an icon-triggered Popover (lucide-react's `Languages` icon, same
-pattern as `NavMenu`/`AuthStatus`) listing all four languages, each with an inline SVG flag (Spain/Ikurriña/
-Galicia/Senyera, all viewBox `0 0 50 30` for consistent aspect ratio) and closing itself on selection.
+pattern as `NavMenu`/`AuthStatus`) that opens to the same flag-button row shown inline in earlier iterations — an
+"ES" text button plus one button per non-Spanish language with an inline SVG flag (Ikurriña/Galicia/Senyera, all
+viewBox `0 0 50 30` for consistent aspect ratio), no name labels next to them. Selecting one calls
+`i18n.changeLanguage` and closes the popover.
 
-**Icon-triggered popovers** (`NavMenu.tsx`, `AuthStatus.tsx`): both wrap `src/components/ui/popover.tsx`
-(a thin wrapper around `@base-ui/react/popover`, same pattern as `ui/select.tsx`) around an icon-only
-`Button` (`variant="ghost" size="icon"`, from lucide-react) instead of showing text/links inline in the
-header — keeps the sticky top bar narrow enough to avoid horizontal scroll on mobile. Open state is
+**Icon-triggered popovers** (`NavMenu.tsx`, `AuthStatus.tsx`, `LanguageSwitcher.tsx`): wrap
+`src/components/ui/popover.tsx` (a thin wrapper around `@base-ui/react/popover`, same pattern as `ui/select.tsx`)
+around an icon-only `Button` (`variant="ghost" size="icon"`, from lucide-react) instead of showing text/links
+inline in the header — keeps the sticky top bar narrow enough to avoid horizontal scroll on mobile. Open state is
 controlled locally (`useState` + `onOpenChange`) so a link/action inside the popup can close it explicitly;
 outside-click/Escape-to-close comes for free from Base UI. `LoginForm` has no box styling of its own (no
 border/shadow/bg) since it's only ever rendered inside `PopoverContent`, which already provides that chrome.
+`NavMenu` skips the popover entirely and renders a direct `Link`-as-icon-button (`Home` icon) when there are no
+items besides "inicio" to show (i.e. logged out or non-admin) — the hamburger `Menu` icon with the dropdown only
+appears once history/settings/admin links are actually available. `AuthStatus` shows a `ShieldCheck` icon (with
+`aria-label`/`title` for accessibility) next to the email instead of a "· administración" text badge when the
+signed-in user is an admin.
 
 **Routing** (`src/App.tsx`, react-router-dom): the calculator lives at `/`; `HistorialList`, `ConfiguracionPanel`,
 and `AdminPanel` were moved off the main page onto their own routes (`/history`, `/settings`, `/admin`

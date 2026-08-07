@@ -1,7 +1,7 @@
 {
   "app": {
     "title": "Soldata Garbia",
-    "subtitle": "Soldata garbiaren kalkulagailua — Arabako Lurralde Historikoa"
+    "subtitle": "Soldata garbiaren kalkulagailua — Araba, Bizkaia, Gipuzkoa, Nafarroa eta Espainiako gainerakoa"
   },
   "form": {
     "cardTitle": "Zure datuak",
@@ -22,7 +22,10 @@
     "discapacidad33_65_conMovilidad": "%33 - %65, mugikortasun murriztuarekin",
     "discapacidad65OMas": "%65 edo gehiago",
     "submit": "Soldata garbia kalkulatu",
-    "submitting": "Kalkulatzen..."
+    "submitting": "Kalkulatzen...",
+    "irpfManualLabel": "Aldatu % PFEZ (aukerakoa)",
+    "irpfManualAyuda": "Jada ezagutzen baduzu PFEZ atxikipenaren benetako ehunekoa, adierazi hemen, kalkuluak hautatutako lurraldearen taulatik lortu beharrean zuzenean erabil dezan.",
+    "irpfManualPlaceholder": "Erabili taula"
   },
   "result": {
     "cardTitle": "Zure soldata garbia",
@@ -44,7 +47,8 @@
     "ssMei": "MEI",
     "ssMeiTooltip": "Belaunaldien arteko Ekitate Mekanismoa: etorkizuneko pentsioen iraunkortasuna indartzeko kotizazio gehigarria.",
     "salarioNeto": "Soldata garbia",
-    "disclaimer": "Kalkulu hau orientagarria da, Arabako Foru Aldundiaren PFEZ atxikipen-taulan (42/2025 Foru Dekretua) eta 2026an indarrean dauden Gizarte Segurantzako kotizazioetan (PJC/297/2026 Agindua) oinarritua. Ez du zure benetako nomina ordezkatzen, ezta zure enpresako aholkularitzari zein Ogasunari egindako kontsulta ere."
+    "disclaimer": "Kalkulu hau orientagarria da, hautatutako lurraldearentzat konfiguratutako PFEZ atxikipen-taulan eta Gizarte Segurantzako kotizazioetan oinarritua. Ez du zure benetako nomina ordezkatzen, ezta zure enpresako aholkularitzari zein Ogasunari egindako kontsulta ere.",
+    "disclaimerEstado": "\"Espainiako gainerakoa\" aukerarako, ehunekoa Zerga Agentziaren prozedura orokorrarekin kalkulatutako hurbilketa da, ezkontiderik edo ardurapeko arbasorik ez duzula suposatuz. Ez du zure egoera pertsonalaren kalkulu zehatza ordezkatzen."
   },
   "errors": {
     "calculo": "Ezin izan da emaitza kalkulatu. Saiatu berriro."
@@ -90,19 +94,13 @@
     "ssDesempleoTemporal": "Langabezia — aldi baterakoa (%)",
     "ssFormacionProfesional": "Lanbide-prestakuntza (%)",
     "ssMei": "MEI (%)",
+    "territorioTitle": "Lurraldea",
     "irpfTitle": "PFEZ atxikipen-taula",
-    "irpfFijoLabel": "PFEZ ehuneko finkoa (aukerakoa)",
-    "irpfFijoPlaceholder": "Erabili taula",
-    "irpfFijoAyuda": "Betetzen baduzu, ehuneko hori zuzenean aplikatuko da eta tarte-taula ez da erabiliko.",
     "irpfHasta": "Arte (€)",
     "sinLimite": "Mugarik gabe",
     "agregarTramo": "Gehitu tartea",
     "eliminarTramo": "Ezabatu",
-    "quitarFijo": "Kendu balio finkoa",
     "minoracionTitle": "Desgaitasunagatiko murrizketa",
-    "minoracionFijoLabel": "Murrizketa-puntu finkoak (aukerakoa)",
-    "minoracionFijoPlaceholder": "Erabili taula",
-    "minoracionFijoAyuda": "Betetzen baduzu, puntu horiek aitortutako edozein desgaitasun-mailatan aplikatuko dira, taula alde batera utzita.",
     "minoracionPuntosA": "Puntuak (%33-%65, mugikortasun murriztu gabe)",
     "minoracionPuntosBc": "Puntuak (%33-%65 mugikortasun murriztuarekin, edo ≥%65)",
     "restaurar": "Balio lehenetsiak berrezarri",
@@ -110,5 +108,13 @@
     "guardando": "Gordetzen...",
     "guardadoOk": "Konfigurazioa gorde da.",
     "error": "Ezin izan da konfigurazioa gorde. Egiaztatu balioak eta saiatu berriro."
+  },
+  "territorio": {
+    "selector": "Lurraldea",
+    "araba": "Araba",
+    "bizkaia": "Bizkaia",
+    "gipuzkoa": "Gipuzkoa",
+    "nafarroa": "Nafarroa",
+    "estado": "Espainiako gainerakoa"
   }
 }

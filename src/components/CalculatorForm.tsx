@@ -15,7 +15,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { InfoTooltip } from "@/components/InfoTooltip";
 import { localeIntl } from "@/lib/locale";
-import type { CalculoNominaInput, GradoDiscapacidad, TipoContrato } from "@/lib/types";
+import { TERRITORIOS } from "@/lib/types";
+import type { CalculoNominaInput, GradoDiscapacidad, Territorio, TipoContrato } from "@/lib/types";
 
 function EtiquetaConAyuda({ texto, ayuda }: { texto: string; ayuda: string }) {
   return (
@@ -52,10 +53,12 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
   const { t, i18n } = useTranslation();
   const [salarioBrutoAnual, setSalarioBrutoAnual] = useState("30000");
   const [salarioEnfocado, setSalarioEnfocado] = useState(false);
+  const [territorio, setTerritorio] = useState<Territorio>("araba");
   const [numeroPagas, setNumeroPagas] = useState<"12" | "14">("14");
   const [numeroDescendientes, setNumeroDescendientes] = useState("0");
   const [tipoContrato, setTipoContrato] = useState<TipoContrato>("indefinido");
   const [gradoDiscapacidad, setGradoDiscapacidad] = useState<GradoDiscapacidad>("ninguno");
+  const [irpfManual, setIrpfManual] = useState("");
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -68,6 +71,8 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
       numeroDescendientes: Number(numeroDescendientes),
       tipoContrato,
       gradoDiscapacidad,
+      territorio,
+      irpfPorcentajeManual: irpfManual === "" ? null : Number(irpfManual),
     });
   }
 
@@ -96,6 +101,26 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
               onChange={(e) => setSalarioBrutoAnual(e.target.value.replace(/\D/g, ""))}
               required
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label>{t("territorio.selector")}</Label>
+            <Select
+              items={TERRITORIOS.map((id) => ({ value: id, label: t(`territorio.${id}`) }))}
+              value={territorio}
+              onValueChange={(v) => setTerritorio(v as Territorio)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {TERRITORIOS.map((id) => (
+                  <SelectItem key={id} value={id}>
+                    {t(`territorio.${id}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
@@ -181,6 +206,22 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="irpfManual">
+              <EtiquetaConAyuda texto={t("form.irpfManualLabel")} ayuda={t("form.irpfManualAyuda")} />
+            </Label>
+            <Input
+              id="irpfManual"
+              type="number"
+              min={0}
+              max={100}
+              step="0.01"
+              placeholder={t("form.irpfManualPlaceholder")}
+              value={irpfManual}
+              onChange={(e) => setIrpfManual(e.target.value)}
+            />
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>

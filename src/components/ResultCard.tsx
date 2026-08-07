@@ -80,7 +80,7 @@ export function ResultCard({ resultado }: ResultCardProps) {
               <p className="text-xl font-medium">
                 {formatoPorcentaje.format(retencionIrpf.tipoAplicado / 100)}
               </p>
-              {retencionIrpf.puntosMinoracionDiscapacidad > 0 && (
+              {!retencionIrpf.manual && retencionIrpf.puntosMinoracionDiscapacidad > 0 && (
                 <p className="text-muted-foreground text-xs">
                   {t("result.minoracionNota", {
                     tabla: retencionIrpf.tipoTablaGeneral,
@@ -219,6 +219,9 @@ export function ResultCard({ resultado }: ResultCardProps) {
       </Card>
 
       <p className="text-muted-foreground text-xs">{t("result.disclaimer")}</p>
+      {resultado.territorio === "estado" && (
+        <p className="text-muted-foreground text-xs">{t("result.disclaimerEstado")}</p>
+      )}
     </div>
   );
 }

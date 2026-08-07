@@ -1,7 +1,7 @@
 {
   "name": "Soldata Garbia",
   "short_name": "Soldata Garbia",
-  "description": "Calculadora de salario neto para el Territorio Histórico de Álava",
+  "description": "Calculadora de salario neto para Araba, Bizkaia, Gipuzkoa, Nafarroa y el resto de España",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

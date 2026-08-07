@@ -11,9 +11,12 @@ import { db } from "@/lib/firebase";
 import { actualizarConfiguracionCalculo } from "@/lib/config";
 import { CONFIGURACION_DEFECTO } from "@/lib/configuracionDefecto";
 import { useAuth } from "@/context/AuthContext";
+import { TERRITORIOS_CON_TABLA } from "@/lib/types";
 import type {
   ConfiguracionCalculo,
+  ConfiguracionTerritorio,
   SeguridadSocialConfig,
+  TerritorioConTabla,
   TramoMinoracionDoc,
   TramoRetencionDoc,
 } from "@/lib/types";
@@ -33,6 +36,7 @@ export function ConfiguracionPanel() {
   const { t } = useTranslation();
   const { isAdmin } = useAuth();
   const [configuracion, setConfiguracion] = useState<ConfiguracionCalculo>(CONFIGURACION_DEFECTO);
+  const [territorioEditado, setTerritorioEditado] = useState<TerritorioConTabla>("araba");
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [guardadoOk, setGuardadoOk] = useState(false);
@@ -44,10 +48,7 @@ export function ConfiguracionPanel() {
       if (snap.exists()) {
         const data = snap.data();
         setConfiguracion({
-          tablaRetencionIrpf: data.tablaRetencionIrpf,
-          irpfPorcentajeFijo: data.irpfPorcentajeFijo ?? null,
-          tablaMinoracionDiscapacidad: data.tablaMinoracionDiscapacidad,
-          minoracionPuntosFijo: data.minoracionPuntosFijo ?? null,
+          territorios: data.territorios,
           seguridadSocial: data.seguridadSocial,
         });
       } else {
@@ -58,69 +59,61 @@ export function ConfiguracionPanel() {
 
   if (!isAdmin) return null;
 
+  const tablas = configuracion.territorios[territorioEditado];
+
+  function actualizarTerritorio(siguiente: Partial<ConfiguracionTerritorio>) {
+    setConfiguracion((c) => ({
+      ...c,
+      territorios: {
+        ...c.territorios,
+        [territorioEditado]: { ...c.territorios[territorioEditado], ...siguiente },
+      },
+    }));
+  }
+
   function actualizarSS(campo: keyof SeguridadSocialConfig, valor: string) {
     setConfiguracion((c) => ({ ...c, seguridadSocial: { ...c.seguridadSocial, [campo]: numeroSeguro(valor) } }));
   }
 
-  function actualizarIrpfFijo(valor: string) {
-    setConfiguracion((c) => ({ ...c, irpfPorcentajeFijo: valor === "" ? null : numeroSeguro(valor) }));
-  }
-
-  function actualizarMinoracionFijo(valor: string) {
-    setConfiguracion((c) => ({ ...c, minoracionPuntosFijo: valor === "" ? null : numeroSeguro(valor) }));
-  }
-
   function actualizarTramoIrpf(indice: number, siguiente: TramoRetencionDoc) {
-    setConfiguracion((c) => ({
-      ...c,
-      tablaRetencionIrpf: actualizarEnIndice(c.tablaRetencionIrpf, indice, siguiente),
-    }));
+    actualizarTerritorio({ tablaRetencionIrpf: actualizarEnIndice(tablas.tablaRetencionIrpf, indice, siguiente) });
   }
 
   function actualizarPorcentajeIrpf(indice: number, columna: number, valor: string) {
-    const tramo = configuracion.tablaRetencionIrpf[indice];
+    const tramo = tablas.tablaRetencionIrpf[indice];
     const porcentajes = [...tramo.porcentajes] as TramoRetencionDoc["porcentajes"];
     porcentajes[columna] = numeroSeguro(valor);
     actualizarTramoIrpf(indice, { ...tramo, porcentajes });
   }
 
   function agregarTramoIrpf() {
-    setConfiguracion((c) => {
-      const tabla = c.tablaRetencionIrpf;
-      const anterior = tabla.length >= 2 ? tabla[tabla.length - 2].hasta ?? 0 : 0;
-      const nuevoTramo: TramoRetencionDoc = { hasta: anterior + 1000, porcentajes: [0, 0, 0, 0, 0, 0, 0] };
-      return { ...c, tablaRetencionIrpf: [...tabla.slice(0, -1), nuevoTramo, tabla[tabla.length - 1]] };
-    });
+    const tabla = tablas.tablaRetencionIrpf;
+    const anterior = tabla.length >= 2 ? tabla[tabla.length - 2].hasta ?? 0 : 0;
+    const nuevoTramo: TramoRetencionDoc = { hasta: anterior + 1000, porcentajes: [0, 0, 0, 0, 0, 0, 0] };
+    actualizarTerritorio({ tablaRetencionIrpf: [...tabla.slice(0, -1), nuevoTramo, tabla[tabla.length - 1]] });
   }
 
   function eliminarTramoIrpf(indice: number) {
-    setConfiguracion((c) => ({
-      ...c,
-      tablaRetencionIrpf: c.tablaRetencionIrpf.filter((_, i) => i !== indice),
-    }));
+    actualizarTerritorio({ tablaRetencionIrpf: tablas.tablaRetencionIrpf.filter((_, i) => i !== indice) });
   }
 
   function actualizarTramoMinoracion(indice: number, siguiente: TramoMinoracionDoc) {
-    setConfiguracion((c) => ({
-      ...c,
-      tablaMinoracionDiscapacidad: actualizarEnIndice(c.tablaMinoracionDiscapacidad, indice, siguiente),
-    }));
-  }
-
-  function agregarTramoMinoracion() {
-    setConfiguracion((c) => {
-      const tabla = c.tablaMinoracionDiscapacidad;
-      const anterior = tabla.length >= 2 ? tabla[tabla.length - 2].hasta ?? 0 : 0;
-      const nuevoTramo: TramoMinoracionDoc = { hasta: anterior + 1000, a: 0, bc: 0 };
-      return { ...c, tablaMinoracionDiscapacidad: [...tabla.slice(0, -1), nuevoTramo, tabla[tabla.length - 1]] };
+    actualizarTerritorio({
+      tablaMinoracionDiscapacidad: actualizarEnIndice(tablas.tablaMinoracionDiscapacidad, indice, siguiente),
     });
   }
 
+  function agregarTramoMinoracion() {
+    const tabla = tablas.tablaMinoracionDiscapacidad;
+    const anterior = tabla.length >= 2 ? tabla[tabla.length - 2].hasta ?? 0 : 0;
+    const nuevoTramo: TramoMinoracionDoc = { hasta: anterior + 1000, a: 0, bc: 0 };
+    actualizarTerritorio({ tablaMinoracionDiscapacidad: [...tabla.slice(0, -1), nuevoTramo, tabla[tabla.length - 1]] });
+  }
+
   function eliminarTramoMinoracion(indice: number) {
-    setConfiguracion((c) => ({
-      ...c,
-      tablaMinoracionDiscapacidad: c.tablaMinoracionDiscapacidad.filter((_, i) => i !== indice),
-    }));
+    actualizarTerritorio({
+      tablaMinoracionDiscapacidad: tablas.tablaMinoracionDiscapacidad.filter((_, i) => i !== indice),
+    });
   }
 
   function restaurarPorDefecto() {
@@ -213,26 +206,24 @@ export function ConfiguracionPanel() {
         <Separator />
 
         <section className="space-y-3">
-          <h3 className="text-sm font-medium">{t("configuracion.irpfTitle")}</h3>
-          <div className="space-y-1">
-            <Label htmlFor="irpfFijo">{t("configuracion.irpfFijoLabel")}</Label>
-            <div className="flex items-center gap-2">
-              <Input
-                id="irpfFijo"
-                type="number"
-                className="w-32"
-                placeholder={t("configuracion.irpfFijoPlaceholder")}
-                value={configuracion.irpfPorcentajeFijo ?? ""}
-                onChange={(e) => actualizarIrpfFijo(e.target.value)}
-              />
-              {configuracion.irpfPorcentajeFijo !== null && (
-                <Button type="button" size="sm" variant="outline" onClick={() => actualizarIrpfFijo("")}>
-                  {t("configuracion.quitarFijo")}
-                </Button>
-              )}
-            </div>
-            <p className="text-muted-foreground text-xs">{t("configuracion.irpfFijoAyuda")}</p>
+          <h3 className="text-sm font-medium">{t("configuracion.territorioTitle")}</h3>
+          <div className="flex flex-wrap gap-2">
+            {TERRITORIOS_CON_TABLA.map((id) => (
+              <Button
+                key={id}
+                type="button"
+                size="sm"
+                variant={territorioEditado === id ? "default" : "outline"}
+                onClick={() => setTerritorioEditado(id)}
+              >
+                {t(`territorio.${id}`)}
+              </Button>
+            ))}
           </div>
+
+          <h4 className="text-sm font-medium">
+            {t("configuracion.irpfTitle")} — {t(`territorio.${territorioEditado}`)}
+          </h4>
           <Table>
             <TableHeader>
               <TableRow>
@@ -247,8 +238,8 @@ export function ConfiguracionPanel() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {configuracion.tablaRetencionIrpf.map((tramo, indice) => {
-                const esUltimo = indice === configuracion.tablaRetencionIrpf.length - 1;
+              {tablas.tablaRetencionIrpf.map((tramo, indice) => {
+                const esUltimo = indice === tablas.tablaRetencionIrpf.length - 1;
                 return (
                   <TableRow key={indice}>
                     <TableCell>
@@ -293,26 +284,9 @@ export function ConfiguracionPanel() {
         <Separator />
 
         <section className="space-y-3">
-          <h3 className="text-sm font-medium">{t("configuracion.minoracionTitle")}</h3>
-          <div className="space-y-1">
-            <Label htmlFor="minoracionFijo">{t("configuracion.minoracionFijoLabel")}</Label>
-            <div className="flex items-center gap-2">
-              <Input
-                id="minoracionFijo"
-                type="number"
-                className="w-32"
-                placeholder={t("configuracion.minoracionFijoPlaceholder")}
-                value={configuracion.minoracionPuntosFijo ?? ""}
-                onChange={(e) => actualizarMinoracionFijo(e.target.value)}
-              />
-              {configuracion.minoracionPuntosFijo !== null && (
-                <Button type="button" size="sm" variant="outline" onClick={() => actualizarMinoracionFijo("")}>
-                  {t("configuracion.quitarFijo")}
-                </Button>
-              )}
-            </div>
-            <p className="text-muted-foreground text-xs">{t("configuracion.minoracionFijoAyuda")}</p>
-          </div>
+          <h3 className="text-sm font-medium">
+            {t("configuracion.minoracionTitle")} — {t(`territorio.${territorioEditado}`)}
+          </h3>
           <Table>
             <TableHeader>
               <TableRow>
@@ -323,8 +297,8 @@ export function ConfiguracionPanel() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {configuracion.tablaMinoracionDiscapacidad.map((tramo, indice) => {
-                const esUltimo = indice === configuracion.tablaMinoracionDiscapacidad.length - 1;
+              {tablas.tablaMinoracionDiscapacidad.map((tramo, indice) => {
+                const esUltimo = indice === tablas.tablaMinoracionDiscapacidad.length - 1;
                 return (
                   <TableRow key={indice}>
                     <TableCell>

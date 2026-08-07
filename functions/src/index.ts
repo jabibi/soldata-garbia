@@ -3,7 +3,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import * as logger from "firebase-functions/logger";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { z } from "zod";
-import { calcularNomina as calcularNominaAlava } from "./domain/calculadora";
+import { calcularNomina as calcularNominaDominio } from "./domain/calculadora";
 import {
   CONFIGURACION_DEFECTO,
   ConfiguracionCalculo,
@@ -11,6 +11,7 @@ import {
   configuracionSchema,
   resolverConfiguracion,
 } from "./domain/configuracion";
+import { TERRITORIOS } from "./domain/types";
 
 admin.initializeApp();
 
@@ -23,6 +24,8 @@ const inputSchema = z.object({
   numeroDescendientes: z.number().int().min(0).max(6),
   tipoContrato: z.enum(["indefinido", "temporal"]),
   gradoDiscapacidad: z.enum(["ninguno", "33_65_sin_movilidad", "33_65_con_movilidad", "65_o_mas"]),
+  territorio: z.enum(TERRITORIOS),
+  irpfPorcentajeManual: z.number().min(0).max(100).nullable(),
 });
 
 async function obtenerConfiguracionCalculo(): Promise<ConfiguracionCalculo> {
@@ -44,7 +47,7 @@ export const calcularNomina = onCall({ region: "europe-west1", cors: true }, asy
   }
 
   const configuracion = await obtenerConfiguracionCalculo();
-  const resultado = calcularNominaAlava(parsed.data, resolverConfiguracion(configuracion));
+  const resultado = calcularNominaDominio(parsed.data, resolverConfiguracion(configuracion));
 
   if (request.auth) {
     await admin.firestore().collection("historial").add({

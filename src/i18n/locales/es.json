@@ -1,7 +1,7 @@
 {
   "app": {
     "title": "Salario Neto",
-    "subtitle": "Calculadora de salario neto — Territorio Histórico de Álava"
+    "subtitle": "Calculadora de salario neto — Araba, Bizkaia, Gipuzkoa, Nafarroa y resto de España"
   },
   "form": {
     "cardTitle": "Tus datos",
@@ -22,7 +22,10 @@
     "discapacidad33_65_conMovilidad": "33% - 65%, con movilidad reducida",
     "discapacidad65OMas": "65% o superior",
     "submit": "Calcular sueldo neto",
-    "submitting": "Calculando..."
+    "submitting": "Calculando...",
+    "irpfManualLabel": "Modificar % IRPF (opcional)",
+    "irpfManualAyuda": "Si ya conoces tu porcentaje real de retención de IRPF, indícalo aquí para que el cálculo lo use directamente en vez de obtenerlo de la tabla del territorio elegido.",
+    "irpfManualPlaceholder": "Usar tabla"
   },
   "result": {
     "cardTitle": "Tu sueldo neto",
@@ -44,7 +47,8 @@
     "ssMei": "MEI",
     "ssMeiTooltip": "Mecanismo de Equidad Intergeneracional: cotización adicional destinada a reforzar la sostenibilidad futura de las pensiones.",
     "salarioNeto": "Salario neto",
-    "disclaimer": "Cálculo orientativo según la tabla de retención IRPF de la Diputación Foral de Álava (Decreto Foral 42/2025) y las cotizaciones a la Seguridad Social vigentes en 2026 (Orden PJC/297/2026). No sustituye a tu nómina real ni a una consulta con la asesoría de tu empresa o con Hacienda."
+    "disclaimer": "Cálculo orientativo según la tabla de retención IRPF y las cotizaciones a la Seguridad Social configuradas para el territorio seleccionado. No sustituye a tu nómina real ni a una consulta con la asesoría de tu empresa o con Hacienda.",
+    "disclaimerEstado": "Para \"Resto de España\" el porcentaje es una aproximación calculada con el procedimiento general de la Agencia Tributaria, asumiendo que no tienes cónyuge ni ascendientes a cargo. No sustituye el cálculo exacto de tu situación personal."
   },
   "errors": {
     "calculo": "No se ha podido calcular el resultado. Inténtalo de nuevo."
@@ -90,19 +94,13 @@
     "ssDesempleoTemporal": "Desempleo — temporal (%)",
     "ssFormacionProfesional": "Formación profesional (%)",
     "ssMei": "MEI (%)",
+    "territorioTitle": "Territorio",
     "irpfTitle": "Tabla de retención IRPF",
-    "irpfFijoLabel": "Porcentaje IRPF fijo (opcional)",
-    "irpfFijoPlaceholder": "Usar tabla",
-    "irpfFijoAyuda": "Si lo rellenas, se aplica este porcentaje directamente y se ignora la tabla de tramos.",
     "irpfHasta": "Hasta (€)",
     "sinLimite": "Sin límite",
     "agregarTramo": "Añadir tramo",
     "eliminarTramo": "Eliminar",
-    "quitarFijo": "Quitar valor fijo",
     "minoracionTitle": "Minoración por discapacidad",
-    "minoracionFijoLabel": "Puntos de minoración fijos (opcional)",
-    "minoracionFijoPlaceholder": "Usar tabla",
-    "minoracionFijoAyuda": "Si lo rellenas, se aplican estos puntos a cualquier grado de discapacidad reconocido, ignorando la tabla.",
     "minoracionPuntosA": "Puntos (33%-65%, sin movilidad reducida)",
     "minoracionPuntosBc": "Puntos (33%-65% con movilidad, o ≥65%)",
     "restaurar": "Restaurar valores por defecto",
@@ -110,5 +108,13 @@
     "guardando": "Guardando...",
     "guardadoOk": "Configuración guardada.",
     "error": "No se ha podido guardar la configuración. Comprueba los valores e inténtalo de nuevo."
+  },
+  "territorio": {
+    "selector": "Territorio",
+    "araba": "Araba",
+    "bizkaia": "Bizkaia",
+    "gipuzkoa": "Gipuzkoa",
+    "nafarroa": "Nafarroa",
+    "estado": "Resto de España"
   }
 }
