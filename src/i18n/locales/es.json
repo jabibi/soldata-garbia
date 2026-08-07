@@ -71,7 +71,8 @@
     "historial": "Historial",
     "configuracion": "Configuración de cálculo",
     "administracion": "Administración de usuarios",
-    "abrirMenu": "Abrir menú"
+    "abrirMenu": "Abrir menú",
+    "idioma": "Seleccionar idioma"
   },
   "admin": {
     "title": "Administración de usuarios",

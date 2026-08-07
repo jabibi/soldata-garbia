@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Soldata Garbia — a Basque/Spanish payroll (nómina) net-salary calculator scoped to the Territorio Histórico de
-Álava, built on Firebase (Hosting + Cloud Functions + Firestore + Auth). Frontend is React 19 + Vite + Tailwind v4
-+ shadcn/ui, with i18n in Spanish and Basque (Euskera).
+Soldata Garbia — a payroll (nómina) net-salary calculator scoped to the Territorio Histórico de Álava, built on
+Firebase (Hosting + Cloud Functions + Firestore + Auth). Frontend is React 19 + Vite + Tailwind v4 + shadcn/ui,
+with i18n in Spanish, Basque (Euskera), Galician (Galego), and Catalan (Català).
 
 This is **two separate npm projects** sharing one Firebase project, not a single workspace:
 - `/` (root) — the Vite/React frontend, deployed as Firebase Hosting.
@@ -122,7 +122,18 @@ invoker permission (`allUsers`) on this GCP project — if a callable returns a 
 wires up `functions`/`auth`/`db`. `src/lib/api.ts`, `src/lib/auth.ts`, and `src/lib/config.ts` wrap the callable
 functions with typed `httpsCallable` calls. `src/components/ui/` holds shadcn/ui primitives (style `base-nova`,
 see `components.json`); the `@` path alias resolves to `src/` (`vite.config.ts`). Copy is externalized to
-`src/i18n/locales/{es,eu}.json` via i18next, with Spanish as the fallback language.
+`src/i18n/locales/{es,eu,gl,ca}.json` via i18next, with Spanish as the fallback language; all four files must keep
+identical key sets (no per-language additions) since components look up the same keys regardless of active
+language. Language detection order is `["querystring", "localStorage", "navigator"]` with
+`lookupQuerystring: "lang"`, so `?lang=eu`/`?lang=gl`/`?lang=ca` force a language (used by `sitemap.xml`'s
+hreflang alternates) and the choice is cached to `localStorage` afterwards. `src/lib/locale.ts`'s `localeIntl()`
+maps an i18next language code to its Intl/BCP47 tag (`eu` → `eu-ES`, etc.) for `Intl.NumberFormat`/currency
+formatting — use it instead of re-deriving the tag inline. `src/lib/fecha.ts`'s custom date formatter still
+special-cases only `eu` for ISO (YYYY/MM/DD) order; Galician and Catalan use the DD/MM/YYYY order like Spanish.
+
+**Language switcher** (`LanguageSwitcher.tsx`): an icon-triggered Popover (lucide-react's `Languages` icon, same
+pattern as `NavMenu`/`AuthStatus`) listing all four languages, each with an inline SVG flag (Spain/Ikurriña/
+Galicia/Senyera, all viewBox `0 0 50 30` for consistent aspect ratio) and closing itself on selection.
 
 **Icon-triggered popovers** (`NavMenu.tsx`, `AuthStatus.tsx`): both wrap `src/components/ui/popover.tsx`
 (a thin wrapper around `@base-ui/react/popover`, same pattern as `ui/select.tsx`) around an icon-only

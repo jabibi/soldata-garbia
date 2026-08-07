@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { formatearFechaHora } from "@/lib/fecha";
+import { localeIntl } from "@/lib/locale";
 import type { CalculoNominaResultado } from "@/lib/types";
 
 interface HistorialEntry {
@@ -42,7 +43,7 @@ export function HistorialList() {
 
   if (!user) return null;
 
-  const locale = i18n.language?.startsWith("eu") ? "eu-ES" : "es-ES";
+  const locale = localeIntl(i18n.language);
   const formatoEuro = new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "EUR",

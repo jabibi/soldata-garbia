@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { InfoTooltip } from "@/components/InfoTooltip";
 import { cn } from "@/lib/utils";
+import { localeIntl } from "@/lib/locale";
 import type { CalculoNominaResultado } from "@/lib/types";
 
 interface ResultCardProps {
@@ -32,7 +33,7 @@ export function ResultCard({ resultado }: ResultCardProps) {
   const [ssDesplegada, setSsDesplegada] = useState(false);
   const { retencionIrpf, seguridadSocial } = resultado;
 
-  const locale = i18n.language?.startsWith("eu") ? "eu-ES" : "es-ES";
+  const locale = localeIntl(i18n.language);
   const formatoEuro = new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "EUR",

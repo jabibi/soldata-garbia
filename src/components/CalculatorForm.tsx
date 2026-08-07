@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { InfoTooltip } from "@/components/InfoTooltip";
+import { localeIntl } from "@/lib/locale";
 import type { CalculoNominaInput, GradoDiscapacidad, TipoContrato } from "@/lib/types";
 
 function EtiquetaConAyuda({ texto, ayuda }: { texto: string; ayuda: string }) {
@@ -70,7 +71,7 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
     });
   }
 
-  const locale = i18n.language?.startsWith("eu") ? "eu-ES" : "es-ES";
+  const locale = localeIntl(i18n.language);
   const salarioMostrado =
     salarioEnfocado || salarioBrutoAnual === ""
       ? salarioBrutoAnual
