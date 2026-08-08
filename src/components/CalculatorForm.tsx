@@ -217,7 +217,7 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
 
           {isAdmin && (
             <div className="space-y-2">
-              <Label htmlFor="irpfManual">
+              <Label>
                 <EtiquetaConAyuda texto={t("form.irpfManualLabel")} ayuda={t("form.irpfManualAyuda")} />
               </Label>
               <Input
