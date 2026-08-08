@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { InfoTooltip } from "@/components/InfoTooltip";
+import { useAuth } from "@/context/AuthContext";
 import { localeIntl } from "@/lib/locale";
 import { TERRITORIOS } from "@/lib/types";
 import type { CalculoNominaInput, GradoDiscapacidad, Territorio, TipoContrato } from "@/lib/types";
@@ -51,6 +52,7 @@ interface CalculatorFormProps {
 
 export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
   const { t, i18n } = useTranslation();
+  const { isAdmin } = useAuth();
   const [salarioBrutoAnual, setSalarioBrutoAnual] = useState("30000");
   const [salarioEnfocado, setSalarioEnfocado] = useState(false);
   const [territorio, setTerritorio] = useState<Territorio>("araba");
@@ -208,21 +210,23 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="irpfManual">
-              <EtiquetaConAyuda texto={t("form.irpfManualLabel")} ayuda={t("form.irpfManualAyuda")} />
-            </Label>
-            <Input
-              id="irpfManual"
-              type="number"
-              min={0}
-              max={100}
-              step="0.01"
-              placeholder={t("form.irpfManualPlaceholder")}
-              value={irpfManual}
-              onChange={(e) => setIrpfManual(e.target.value)}
-            />
-          </div>
+          {isAdmin && (
+            <div className="space-y-2">
+              <Label htmlFor="irpfManual">
+                <EtiquetaConAyuda texto={t("form.irpfManualLabel")} ayuda={t("form.irpfManualAyuda")} />
+              </Label>
+              <Input
+                id="irpfManual"
+                type="number"
+                min={0}
+                max={100}
+                step="0.01"
+                placeholder={t("form.irpfManualPlaceholder")}
+                value={irpfManual}
+                onChange={(e) => setIrpfManual(e.target.value)}
+              />
+            </div>
+          )}
 
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? t("form.submitting") : t("form.submit")}

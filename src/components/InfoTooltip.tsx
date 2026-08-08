@@ -11,7 +11,7 @@ interface InfoTooltipProps {
 export function InfoTooltip({ content, children, className }: InfoTooltipProps) {
   return (
     <Popover>
-      <PopoverTrigger render={<span className={cn("cursor-pointer", className)} />}>
+      <PopoverTrigger nativeButton={false} render={<span className={cn("cursor-pointer", className)} />}>
         {children}
       </PopoverTrigger>
       <PopoverContent side="top" align="center" className="max-w-64 p-2.5 text-xs">
