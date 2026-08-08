@@ -5,7 +5,7 @@
   },
   "form": {
     "cardTitle": "Os teus datos",
-    "salarioBrutoAnual": "Salario bruto anual (€)",
+    "salarioBrutoAnual": "Salario bruto anual",
     "numeroPagas": "Número de pagas",
     "pagas12": "12 pagas",
     "pagas14": "14 pagas",

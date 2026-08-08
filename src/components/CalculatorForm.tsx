@@ -79,10 +79,15 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
   }
 
   const locale = localeIntl(i18n.language);
+  const formatoSalario = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 0,
+  });
   const salarioMostrado =
     salarioEnfocado || salarioBrutoAnual === ""
       ? salarioBrutoAnual
-      : new Intl.NumberFormat(locale).format(Number(salarioBrutoAnual));
+      : formatoSalario.format(Number(salarioBrutoAnual));
 
   return (
     <Card>
