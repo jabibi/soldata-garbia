@@ -27,13 +27,21 @@ export interface CalculoNominaInput {
   territorio: Territorio;
   /** Si no es null, sustituye el tipo de retención aplicado (tabla + minoración). */
   irpfPorcentajeManual: number | null;
+  /**
+   * Porcentaje de jornada (0 < x <= 100, 100 = jornada completa). `salarioBrutoAnual`
+   * se entiende siempre referido a jornada completa; ver `calcularNomina` en
+   * `calculadora.ts` para cómo se usa este porcentaje en el cálculo.
+   */
+  porcentajeJornada: number;
 }
 
 export interface CalculoNominaResultado {
+  /** Salario bruto ya reducido por `porcentajeJornada` (lo realmente percibido). */
   salarioBrutoAnual: number;
   salarioBrutoMensual: number;
   numeroPagas: 12 | 14;
   territorio: Territorio;
+  porcentajeJornada: number;
   retencionIrpf: {
     tipoAplicado: number; // porcentaje, p.ej. 12.5
     tipoTablaGeneral: number;

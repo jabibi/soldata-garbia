@@ -4,9 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Soldata Garbia — a payroll (nómina) net-salary calculator scoped to the Territorio Histórico de Álava, built on
-Firebase (Hosting + Cloud Functions + Firestore + Auth). Frontend is React 19 + Vite + Tailwind v4 + shadcn/ui,
-with i18n in Spanish, Basque (Euskera), Galician (Galego), and Catalan (Català).
+Soldata Garbia — a payroll (nómina) net-salary calculator covering Araba, Bizkaia, Gipuzkoa, Nafarroa, and the
+rest of Spain (`"estado"`, régimen común), built on Firebase (Hosting + Cloud Functions + Firestore + Auth).
+Frontend is React 19 + Vite + Tailwind v4 + shadcn/ui, with i18n in Spanish, Basque (Euskera), Galician (Galego),
+and Catalan (Català).
 
 This is **two separate npm projects** sharing one Firebase project, not a single workspace:
 - `/` (root) — the Vite/React frontend, deployed as Firebase Hosting.
@@ -145,6 +146,11 @@ invoker permission (`allUsers`) on this GCP project — if a callable returns a 
   — those collections are only ever written by the Admin SDK from within Cloud Functions. Reads are restricted to
   the owning `uid`/admins (`users`, `historial`) or admins only (`configuracion`, since only the admin-only
   `ConfiguracionPanel` needs to see it).
+
+**No shared package between frontend and functions:** `src/lib/types.ts` hand-duplicates the domain types
+(`CalculoNominaInput`/`Resultado`, `ConfiguracionCalculo`, `Territorio`, etc.) from `functions/src/domain/types.ts`
+— there's no monorepo-shared package, so the two must be kept in sync manually whenever either side's shape
+changes.
 
 **Frontend structure:** `src/lib/firebase.ts` initializes the Firebase app (config is inline, not env-based) and
 wires up `functions`/`auth`/`db`. `src/lib/api.ts`, `src/lib/auth.ts`, and `src/lib/config.ts` wrap the callable

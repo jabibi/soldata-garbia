@@ -26,6 +26,7 @@ export interface CalculoNominaInput {
   gradoDiscapacidad: GradoDiscapacidad;
   territorio: Territorio;
   irpfPorcentajeManual: number | null;
+  porcentajeJornada: number;
 }
 
 export interface CalculoNominaResultado {
@@ -33,6 +34,7 @@ export interface CalculoNominaResultado {
   salarioBrutoMensual: number;
   numeroPagas: 12 | 14;
   territorio: Territorio;
+  porcentajeJornada: number;
   retencionIrpf: {
     tipoAplicado: number;
     tipoTablaGeneral: number;

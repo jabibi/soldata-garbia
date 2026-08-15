@@ -32,6 +32,17 @@ export interface ConfiguracionResuelta {
  * pago (ordinario o paga extra). En una nómina real la Seguridad Social se
  * calcula paga a paga con su propio tope mensual, lo que puede introducir
  * pequeñas diferencias si las pagas extra se cobran de forma no uniforme.
+ *
+ * `salarioBrutoAnual` se entiende siempre a jornada completa; `porcentajeJornada`
+ * (100 = jornada completa) reduce el salario realmente percibido. Cuando la
+ * reducción de jornada dura todo el año (el caso típico de una reducción por
+ * cuidado de hijos), la retribución anual prevista a efectos de Hacienda ya
+ * es la reducida — por eso el *tipo* de retención (tabla foral o fórmula de
+ * "estado") también se calcula sobre el salario real, no sobre el de jornada
+ * completa: no aplica aquí la "elevación al año" del art. 82.2 RIRPF, que está
+ * pensada para cuando el período retribuido no cubre el año natural completo
+ * (p. ej. un contrato de unos pocos meses), no para una intensidad reducida
+ * durante todo el año.
  */
 export function calcularNomina(
   input: CalculoNominaInput,
@@ -45,11 +56,13 @@ export function calcularNomina(
     gradoDiscapacidad,
     territorio,
     irpfPorcentajeManual,
+    porcentajeJornada,
   } = input;
 
-  const salarioBrutoMensual = salarioBrutoAnual / numeroPagas;
+  const salarioBrutoAnualReal = salarioBrutoAnual * (porcentajeJornada / 100);
+  const salarioBrutoMensualReal = salarioBrutoAnualReal / numeroPagas;
 
-  const ss = calcularCotizacionSSMensual(salarioBrutoMensual, tipoContrato, configuracion.seguridadSocial);
+  const ss = calcularCotizacionSSMensual(salarioBrutoMensualReal, tipoContrato, configuracion.seguridadSocial);
   const ssImporteAnual = ss.importeMensual * numeroPagas;
 
   let tipoTablaGeneral: number;
@@ -57,13 +70,18 @@ export function calcularNomina(
   let tipoBase: number;
 
   if (territorio === "estado") {
-    tipoBase = calcularTipoRetencionEstado(salarioBrutoAnual, numeroDescendientes, gradoDiscapacidad, ssImporteAnual);
+    tipoBase = calcularTipoRetencionEstado(
+      salarioBrutoAnualReal,
+      numeroDescendientes,
+      gradoDiscapacidad,
+      ssImporteAnual,
+    );
     tipoTablaGeneral = tipoBase;
     puntosMinoracionDiscapacidad = 0;
   } else {
     const tablasTerritorio = configuracion.territorios[territorio];
     const retencion = calcularTipoRetencion(
-      salarioBrutoAnual,
+      salarioBrutoAnualReal,
       numeroDescendientes,
       gradoDiscapacidad,
       tablasTerritorio.tablaRetencionIrpf,
@@ -75,17 +93,18 @@ export function calcularNomina(
   }
 
   const tipoAplicado = irpfPorcentajeManual ?? tipoBase;
-  const irpfImporteMensual = salarioBrutoMensual * (tipoAplicado / 100);
+  const irpfImporteMensual = salarioBrutoMensualReal * (tipoAplicado / 100);
   const irpfImporteAnual = irpfImporteMensual * numeroPagas;
 
-  const salarioNetoMensual = salarioBrutoMensual - irpfImporteMensual - ss.importeMensual;
+  const salarioNetoMensual = salarioBrutoMensualReal - irpfImporteMensual - ss.importeMensual;
   const salarioNetoAnual = salarioNetoMensual * numeroPagas;
 
   return {
-    salarioBrutoAnual,
-    salarioBrutoMensual,
+    salarioBrutoAnual: salarioBrutoAnualReal,
+    salarioBrutoMensual: salarioBrutoMensualReal,
     numeroPagas,
     territorio,
+    porcentajeJornada,
     retencionIrpf: {
       tipoAplicado,
       tipoTablaGeneral,

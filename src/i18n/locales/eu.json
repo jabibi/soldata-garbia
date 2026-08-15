@@ -6,6 +6,8 @@
   "form": {
     "cardTitle": "Zure datuak",
     "salarioBrutoAnual": "Urteko soldata gordina",
+    "porcentajeJornada": "Lanaldi ehunekoa",
+    "porcentajeJornadaAyuda": "Adierazi zenbatekoa den zure lanaldi-ehunekoa, lanaldi partziala edo lanaldi-murrizketa bat baduzu (adibidez, seme-alabak zaintzeagatik). Urteko soldata gordina lanaldi osokotzat hartzen da; kalkulua (PFEZ atxikipena barne) murrizketa horrekin benetan kobratuko duzun soldataren gainean egiten da.",
     "numeroPagas": "Paga kopurua",
     "pagas12": "12 paga",
     "pagas14": "14 paga",
@@ -35,6 +37,7 @@
     "retencionIrpfTooltip": "PFEZ: Pertsona Fisikoen Errentaren gaineko Zerga. Zure enpresak nominatik kentzen duen ehunekoa da, urteko errenta-aitorpenaren kontura Ogasunari aurreratzen diona.",
     "seguridadSocial": "Gizarte Segurantza",
     "minoracionNota": "(%{{tabla}} taula orokorra − {{puntos}} puntu desgaitasunagatik)",
+    "jornadaNota": "Lanaldia: % {{porcentaje}}. Pantaila honetako zenbateko guztiak lanaldi-murrizketa horrekin benetan jasotzen duzun soldatari dagozkio.",
     "desgloseTitle": "Xehetasunak",
     "concepto": "Kontzeptua",
     "mensual": "Hilekoa",

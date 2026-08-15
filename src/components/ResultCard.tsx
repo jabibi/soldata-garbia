@@ -88,6 +88,11 @@ export function ResultCard({ resultado }: ResultCardProps) {
                   })}
                 </p>
               )}
+              {resultado.porcentajeJornada < 100 && (
+                <p className="text-muted-foreground text-xs">
+                  {t("result.jornadaNota", { porcentaje: resultado.porcentajeJornada })}
+                </p>
+              )}
             </div>
             <div>
               <p className="text-muted-foreground text-sm">{t("result.seguridadSocial")}</p>

@@ -6,6 +6,8 @@
   "form": {
     "cardTitle": "Tus datos",
     "salarioBrutoAnual": "Salario bruto anual",
+    "porcentajeJornada": "Porcentaje de jornada",
+    "porcentajeJornadaAyuda": "Indica el porcentaje de tu jornada si trabajas a tiempo parcial o tienes una reducción de jornada (por ejemplo, por cuidado de hijos). El salario bruto anual se entiende a jornada completa; el cálculo (incluida la retención de IRPF) se hace sobre el salario que realmente vas a cobrar con esa reducción.",
     "numeroPagas": "Número de pagas",
     "pagas12": "12 pagas",
     "pagas14": "14 pagas",
@@ -35,6 +37,7 @@
     "retencionIrpfTooltip": "IRPF: Impuesto sobre la Renta de las Personas Físicas. Es el porcentaje que tu empresa retiene de tu nómina y adelanta a Hacienda a cuenta de tu declaración anual.",
     "seguridadSocial": "Seguridad Social",
     "minoracionNota": "({{tabla}}% tabla general − {{puntos}} pts discapacidad)",
+    "jornadaNota": "Jornada: {{porcentaje}}%. Todos los importes de esta pantalla corresponden al salario que realmente percibes con esa reducción de jornada.",
     "desgloseTitle": "Desglose",
     "concepto": "Concepto",
     "mensual": "Mensual",

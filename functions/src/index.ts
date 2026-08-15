@@ -26,6 +26,7 @@ const inputSchema = z.object({
   gradoDiscapacidad: z.enum(["ninguno", "33_65_sin_movilidad", "33_65_con_movilidad", "65_o_mas"]),
   territorio: z.enum(TERRITORIOS),
   irpfPorcentajeManual: z.number().min(0).max(100).nullable(),
+  porcentajeJornada: z.number().gt(0).max(100),
 });
 
 async function obtenerConfiguracionCalculo(): Promise<ConfiguracionCalculo> {

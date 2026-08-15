@@ -55,6 +55,7 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
   const { isAdmin } = useAuth();
   const [salarioBrutoAnual, setSalarioBrutoAnual] = useState("30000");
   const [salarioEnfocado, setSalarioEnfocado] = useState(false);
+  const [porcentajeJornada, setPorcentajeJornada] = useState("100");
   const [territorio, setTerritorio] = useState<Territorio>("araba");
   const [numeroPagas, setNumeroPagas] = useState<"12" | "14">("14");
   const [numeroDescendientes, setNumeroDescendientes] = useState("0");
@@ -66,6 +67,8 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
     e.preventDefault();
     const bruto = Number(salarioBrutoAnual);
     if (!Number.isFinite(bruto) || bruto <= 0) return;
+    const jornada = Number(porcentajeJornada);
+    if (!Number.isFinite(jornada) || jornada <= 0 || jornada > 100) return;
 
     onSubmit({
       salarioBrutoAnual: bruto,
@@ -75,6 +78,7 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
       gradoDiscapacidad,
       territorio,
       irpfPorcentajeManual: irpfManual === "" ? null : Number(irpfManual),
+      porcentajeJornada: jornada,
     });
   }
 
@@ -106,6 +110,26 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
               onFocus={() => setSalarioEnfocado(true)}
               onBlur={() => setSalarioEnfocado(false)}
               onChange={(e) => setSalarioBrutoAnual(e.target.value.replace(/\D/g, ""))}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="porcentajeJornada">
+              <EtiquetaConAyuda
+                texto={t("form.porcentajeJornada")}
+                ayuda={t("form.porcentajeJornadaAyuda")}
+              />
+            </Label>
+            <Input
+              id="porcentajeJornada"
+              type="number"
+              inputMode="decimal"
+              min={0.01}
+              max={100}
+              step="0.01"
+              value={porcentajeJornada}
+              onChange={(e) => setPorcentajeJornada(e.target.value)}
               required
             />
           </div>

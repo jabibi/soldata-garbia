@@ -6,6 +6,8 @@
   "form": {
     "cardTitle": "Les teves dades",
     "salarioBrutoAnual": "Salari brut anual",
+    "porcentajeJornada": "Percentatge de jornada",
+    "porcentajeJornadaAyuda": "Indica el percentatge de jornada al qual treballes si tens una jornada reduïda o a temps parcial (per exemple, per una reducció de jornada per cura de fills). El salari brut anual s'entén a jornada completa; el càlcul (inclosa la retenció d'IRPF) es fa sobre el salari que realment cobraràs amb aquesta reducció.",
     "numeroPagas": "Nombre de pagues",
     "pagas12": "12 pagues",
     "pagas14": "14 pagues",
@@ -35,6 +37,7 @@
     "retencionIrpfTooltip": "IRPF: Impost sobre la Renda de les Persones Físiques. És el percentatge que la teva empresa reté de la nòmina i avança a Hisenda a compte de la teva declaració anual.",
     "seguridadSocial": "Seguretat Social",
     "minoracionNota": "({{tabla}}% taula general − {{puntos}} pts discapacitat)",
+    "jornadaNota": "Jornada: {{porcentaje}}%. Tots els imports d'aquesta pantalla corresponen al salari que realment perceps amb aquesta reducció de jornada.",
     "desgloseTitle": "Desglossament",
     "concepto": "Concepte",
     "mensual": "Mensual",

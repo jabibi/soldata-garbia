@@ -6,6 +6,8 @@
   "form": {
     "cardTitle": "Os teus datos",
     "salarioBrutoAnual": "Salario bruto anual",
+    "porcentajeJornada": "Porcentaxe de xornada",
+    "porcentajeJornadaAyuda": "Indica a porcentaxe de xornada á que traballas se tes unha xornada reducida ou a tempo parcial (por exemplo, por unha redución de xornada para o coidado dos fillos). O salario bruto anual enténdese a xornada completa; o cálculo (incluída a retención de IRPF) faise sobre o salario que realmente vas cobrar con esa redución.",
     "numeroPagas": "Número de pagas",
     "pagas12": "12 pagas",
     "pagas14": "14 pagas",
@@ -35,6 +37,7 @@
     "retencionIrpfTooltip": "IRPF: Imposto sobre a Renda das Persoas Físicas. É a porcentaxe que a túa empresa retén da túa nómina e adianta a Facenda a conta da túa declaración anual.",
     "seguridadSocial": "Seguridade Social",
     "minoracionNota": "({{tabla}}% táboa xeral − {{puntos}} pts discapacidade)",
+    "jornadaNota": "Xornada: {{porcentaje}}%. Todos os importes desta pantalla corresponden ao salario que realmente percibes con esa redución de xornada.",
     "desgloseTitle": "Desagregación",
     "concepto": "Concepto",
     "mensual": "Mensual",
