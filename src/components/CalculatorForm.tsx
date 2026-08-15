@@ -56,6 +56,7 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
   const [salarioBrutoAnual, setSalarioBrutoAnual] = useState("30000");
   const [salarioEnfocado, setSalarioEnfocado] = useState(false);
   const [porcentajeJornada, setPorcentajeJornada] = useState("100");
+  const [jornadaEnfocada, setJornadaEnfocada] = useState(false);
   const [territorio, setTerritorio] = useState<Territorio>("araba");
   const [numeroPagas, setNumeroPagas] = useState<"12" | "14">("14");
   const [numeroDescendientes, setNumeroDescendientes] = useState("0");
@@ -92,6 +93,8 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
     salarioEnfocado || salarioBrutoAnual === ""
       ? salarioBrutoAnual
       : formatoSalario.format(Number(salarioBrutoAnual));
+  const jornadaMostrada =
+    jornadaEnfocada || porcentajeJornada === "" ? porcentajeJornada : `${porcentajeJornada} %`;
 
   return (
     <Card>
@@ -115,7 +118,7 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="porcentajeJornada">
+            <Label>
               <EtiquetaConAyuda
                 texto={t("form.porcentajeJornada")}
                 ayuda={t("form.porcentajeJornadaAyuda")}
@@ -123,13 +126,15 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
             </Label>
             <Input
               id="porcentajeJornada"
-              type="number"
-              inputMode="decimal"
-              min={0.01}
-              max={100}
-              step="0.01"
-              value={porcentajeJornada}
-              onChange={(e) => setPorcentajeJornada(e.target.value)}
+              type="text"
+              inputMode="numeric"
+              value={jornadaMostrada}
+              onFocus={() => setJornadaEnfocada(true)}
+              onBlur={() => setJornadaEnfocada(false)}
+              onChange={(e) => {
+                const digitos = e.target.value.replace(/\D/g, "");
+                setPorcentajeJornada(digitos === "" ? "" : String(Math.min(100, Number(digitos))));
+              }}
               required
             />
           </div>
