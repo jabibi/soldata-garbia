@@ -93,8 +93,11 @@ export function CalculatorForm({ onSubmit, loading }: CalculatorFormProps) {
     salarioEnfocado || salarioBrutoAnual === ""
       ? salarioBrutoAnual
       : formatoSalario.format(Number(salarioBrutoAnual));
+  const formatoPorcentaje = new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 0 });
   const jornadaMostrada =
-    jornadaEnfocada || porcentajeJornada === "" ? porcentajeJornada : `${porcentajeJornada} %`;
+    jornadaEnfocada || porcentajeJornada === ""
+      ? porcentajeJornada
+      : formatoPorcentaje.format(Number(porcentajeJornada) / 100);
 
   return (
     <Card>
