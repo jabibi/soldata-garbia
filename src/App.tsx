@@ -10,6 +10,7 @@ import { HistorialList } from "@/components/HistorialList";
 import { AdminPanel } from "@/components/AdminPanel";
 import { ConfiguracionPanel } from "@/components/ConfiguracionPanel";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { usePageTracking } from "@/hooks/usePageTracking";
 import { calcularNomina } from "@/lib/api";
 import type { CalculoNominaInput, CalculoNominaResultado } from "@/lib/types";
 
@@ -62,6 +63,76 @@ function Calculadora() {
   );
 }
 
+function AppShell() {
+  const { t } = useTranslation();
+  usePageTracking();
+
+  return (
+    <div className="min-h-svh bg-background text-foreground">
+      <div className="sticky top-0 z-40 border-b bg-background">
+        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
+          <NavMenu />
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+            <AuthStatus />
+          </div>
+        </div>
+      </div>
+
+      <div className="border-b">
+        <Link to="/" className="mx-auto block max-w-3xl px-4 py-6">
+          <h1 className="text-2xl font-semibold">{t("app.title")}</h1>
+          <p className="text-muted-foreground text-sm">{t("app.subtitle")}</p>
+        </Link>
+      </div>
+
+      <main className="mx-auto max-w-3xl space-y-6 px-4 py-8">
+        <Routes>
+          <Route path="/" element={<Calculadora />} />
+          <Route
+            path="/history"
+            element={
+              <SoloConectado>
+                <HistorialList />
+              </SoloConectado>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <SoloAdmin>
+                <ConfiguracionPanel />
+              </SoloAdmin>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <SoloAdmin>
+                <AdminPanel />
+              </SoloAdmin>
+            }
+          />
+        </Routes>
+      </main>
+
+      <footer className="border-t">
+        <div className="mx-auto flex max-w-3xl justify-center px-4 py-6">
+          <a
+            href="https://github.com/jabibi/soldata-garbia"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="GitHub"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <GithubIcon className="size-5" />
+          </a>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
 function App() {
   const { t, i18n } = useTranslation();
 
@@ -72,68 +143,7 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <div className="min-h-svh bg-background text-foreground">
-          <div className="sticky top-0 z-40 border-b bg-background">
-            <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
-              <NavMenu />
-              <div className="flex items-center gap-3">
-                <LanguageSwitcher />
-                <AuthStatus />
-              </div>
-            </div>
-          </div>
-
-          <div className="border-b">
-            <Link to="/" className="mx-auto block max-w-3xl px-4 py-6">
-              <h1 className="text-2xl font-semibold">{t("app.title")}</h1>
-              <p className="text-muted-foreground text-sm">{t("app.subtitle")}</p>
-            </Link>
-          </div>
-
-          <main className="mx-auto max-w-3xl space-y-6 px-4 py-8">
-            <Routes>
-              <Route path="/" element={<Calculadora />} />
-              <Route
-                path="/history"
-                element={
-                  <SoloConectado>
-                    <HistorialList />
-                  </SoloConectado>
-                }
-              />
-              <Route
-                path="/settings"
-                element={
-                  <SoloAdmin>
-                    <ConfiguracionPanel />
-                  </SoloAdmin>
-                }
-              />
-              <Route
-                path="/admin"
-                element={
-                  <SoloAdmin>
-                    <AdminPanel />
-                  </SoloAdmin>
-                }
-              />
-            </Routes>
-          </main>
-
-          <footer className="border-t">
-            <div className="mx-auto flex max-w-3xl justify-center px-4 py-6">
-              <a
-                href="https://github.com/jabibi/soldata-garbia"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="GitHub"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <GithubIcon className="size-5" />
-              </a>
-            </div>
-          </footer>
-        </div>
+        <AppShell />
       </BrowserRouter>
     </AuthProvider>
   );
